@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Register — PortfolioBuddy</title>
+</head>
+<body>
+    <main class="card" role="main">
+        <h1>Create your account</h1>
+        <p class="lead">Sign up with your email to start managing your portfolio.</p>
+
+        <form id="registerForm" action="/register" method="post">
+            <div class="field">
+                <label for="fullname">Full name</label>
+                <input id="fullname" name="fullname" type="text" inputmode="text" autocomplete="name" placeholder="Jane Doe">
+            </div>
+
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+                <div id="emailHelp" class="helper" aria-live="polite"></div>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <div class="pw-row">
+                    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" />
+                </div>
+                <div class="strength" aria-hidden="true"><i id="pwBar"></i></div>
+                <div id="pwHelp" class="helper" aria-live="polite">Use 8+ characters with a mix of letters, numbers, and symbols.</div>
+            </div>
+
+            <div class="field">
+                <label for="confirm">Confirm password</label>
+                <input id="confirm" name="confirm" type="password" required autocomplete="new-password" placeholder="Repeat your password" />
+                <div id="confirmHelp" class="error" aria-live="polite"></div>
+            </div>
+
+            <div class="field">
+                <button class="btn" id="submitBtn" type="submit">Create account</button>
+            </div>
+        </form>
+
+        <p class="meta">Already have an account? <a class="small-link" href="/login">Sign in</a></p>
+    </main>
+</body>
+</html>
