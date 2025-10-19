@@ -63,25 +63,60 @@
          <div class="card bg-info-subtle shadow-sm">
           
             <div class="card-body p-4 p-md-5"> 
-            <!-- ab hier dein bestehender Inhalt (Schritt 3 verfeinert ihn) -->
+            
+                <!-- Icon-->
+            <div class="d-flex align-items-center gap-2 justify-content-center mb-2"> 
+                <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                </svg>
+            </div>
 
             <h1 class="h3 text-center mb-2">Register for PortfolioBuddy</h1>
             <p class="lead text-center mb-4">Sign up and track your investing performance</p>
 
             <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
             <form id="registerForm" action="/register.php" method="post">
-                  <div class="mb-3">
+                  <div class="mb-3"> 
                     
                     <div class="d-flex align-items-center gap-3 ">
-                    <label for="fullname" class="form-label mb-0 flex-shrink-0" stly="width: 120px">Name</label> 
-                   <input id="fullname" name="fullname" type="text" inputmode="text" autocomplete="name" class="form-control" placeholder="Jane Doe"/>
+                    <label for="fullname" class="form-label mb-1 flex-shrink-0" style="width: 150px" >Name</label>  
+                    <input id="fullname" name="fullname" type="text" inputmode="text" autocomplete="name" class="form-control flex-grow-1" placeholder="Jane Doe"/>
                     </div>
 
-                    <div class="d-flex align-items-center gap-3 mt-1">
-                    <label for="email" class="form-label mb-0 flex-shrink-0" style="width: 120px">E-mail</label>
-                   <input id="email" name="email" type="email" required autocomplete="email" class="form-control" placeholder="example@com"/>
+                    <div class="d-flex align-items-center gap-3">
+                    <label for="email" class="form-label mb-1 flex-shrink-0" style="width: 150px">E-mail</label>
+                    <input id="email" name="email" type="email" required autocomplete="email" class="form-control flex-grow-1" placeholder="example@com"/>
                    </div>
-                  
+
+                   <!--PW-->
+                   <div  class="d-flex align-items-center gap-3">
+                    <label for="password" class="form-label mb-1 flex-shrink-0" style="width: 150px">Password</label>
+                    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" class="form-control flex-grow-1" placeholder="At least 8 characters"/>
+                   </div>
+
+                     <!--Confirm PW-->
+                     <div  class="d-flex align-items-center gap-3">
+                        <label for="confirm" class="form-label mb-1 flex-shrink-0" style="width: 150px">Confirm Password</label>
+                        <input id="confirm" name="confirm" type="password" required autocomplete="new-password" class="form-control flex-grow-1" placeholder="Repeat your password"/>
+                     </div>
+                     <div class="d-grid mt-4">
+                        <button class="btn btn-primary" id="submitBtn" type="submit">Create account</button>
+                     </div>
+
+                     <!-- Or use oAuth2-->
+                     <div>
+                        <!--Strich der margin top bottom 24px gibt-->
+                        <hr class="my-4">
+                       <p class="text-center mb-3 auth-changer">Or use modern auth</p>
+                     </div>
+                     <!--CSS-Grid Container Spalte so breit wie der Container jedes Kind steht automatisch unterreinander und mit gap-2 Abstand zwischen Zeilen-->
+                     <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width:   20px; height: 20px; margin-right: 8px;">
+                            Sign up with Google
+                        </button>           
+                     </div>
                 </div>
             </form>
 
@@ -100,6 +135,52 @@
   </div>
 
 
+<script>
+  (function () {
+    const words = [
+      "Or use modern auth",
+      "SSO",
+      "OAuth2",
+      "Magic links"
+    ];
+    const glitchChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%";
+    const target = document.querySelector(".auth-changer");
+    if (!target) return;
+
+    let index = 0;
+    const glitchDuration = 400;
+    const frameInterval = 40;
+    const swapInterval = 2800;
+
+    const runGlitch = (nextWord) => {
+      const start = performance.now();
+      target.classList.add("glitching");
+
+      const update = (now) => {
+        const elapsed = now - start;
+        if (elapsed >= glitchDuration) {
+          target.textContent = nextWord;
+          target.classList.remove("glitching");
+          return;
+        }
+
+        const scrambled = Array.from(nextWord)
+          .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
+          .join("");
+
+        target.textContent = scrambled;
+        setTimeout(() => requestAnimationFrame(update), frameInterval);
+      };
+
+      requestAnimationFrame(update);
+    };
+
+    setInterval(() => {
+      index = (index + 1) % words.length;
+      runGlitch(words[index]);
+    }, swapInterval);
+  })();
+</script>
 
 
 

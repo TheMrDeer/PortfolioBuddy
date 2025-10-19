@@ -1,0 +1,10 @@
+
+.auth-changer {
+  transition: color 0.2s ease;
+}
+
+.auth-changer.glitching {
+  color: #0d6efd;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+}
