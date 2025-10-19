@@ -3,8 +3,116 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- SEO Main Optimierung -->
+     <!--    Wobei description und canonical das wichtigste sind anscheinend         -->
+
+     <!-- Das, was in Google unter dem Seitentitel steht. Wichtig für Klickrate (CTR), nicht direkt fürs Ranking, aber super relevant für SEO-Performance.-->
+    <meta name="description" content="Register for PortfolioBuddy to manage and track your investment portfolio with ease." />
+    <!--Zeigt, wer die Seite erstellt hat — manchmal von Suchmaschinen oder Browsern angezeigt, aber hauptsächlich für Doku oder Transparenz nice-to-have.-->
+    <meta name="author" content="Stipkovits,Hirsch" />
+    <!-- SEHR WICHTIG Hilft gegen Duplicate-Content-Probleme (z. B. wenn dieselbe Seite über /register?ref=xyz erreichbar ist). Canonical sorgt dafür, dass SEO-Power auf eine URL gebündelt wird. -->
+    <link rel="canonical" href="https://www.portfoliobuddy.com/register" />
+   
+    <!-- Open Graph (Metadaten wie diese können später mit PHP per Template zentralisiert werden, aber zum lernen gut)-->
+   
+    <!--Das sind Meta-Tags für Facebook, LinkedIn, X (Twitter) & Co., damit beim Teilen ein schöner Preview-Kasten erscheint.-->
+    <meta property="og:title" content="Register — PortfolioBuddy" />
+    
+    <!---->
+    <meta property="og:description" content="Register for PortfolioBuddy to manage and track your investment portfolio with ease." />
+    
+    <!--Zeigt an welcher Typ von Page (SaaS,Product,Video,Website)-->
+    <meta property="og:type" content="Website" />
+
+    <!--Die URL, auf die der Preview verweist.Hilft, dass Social Bots korrekt die Seite referenzieren (besonders bei Redirects oder Query-Params).-->
+    <meta property="og:url" content="https://www.portfoliobuddy.com/register" />
+
+    <!--Das Bild, das beim Teilen angezeigt wird — super wichtig fürs Branding und Klickrate.-->
+    <meta property="og:image" content="https://www.portfoliobuddy.com/assets/og-image-register.png" />
+    <!--Der Name der Website-->
+    <meta property="og:site_name" content="PortfolioBuddy" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Register — PortfolioBuddy" />               
+    
+    <!-- Bootstrap CSS and JS , da wir es ja verwenden müssen -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+   
+   
+  <link rel="stylesheet" href="styles.css">
     <title>Register — PortfolioBuddy</title>
 </head>
+
+<!-- BODY MIT BOOTSTRAP-KLASSEN FÜR RESPONSIVENESS UND STYLING -->
+ <!--bg-light macht einen Hellen Hintegrund-->
+ <body class="bg-light">
+    
+  <!-- Container mit Padding oben und unten (padding top,bottom mit spacingschritt 5 (48px) ) -->
+   <!-- Zusammen: Dein Block sitzt zentriert in einer maximal sinnvollen Breite und bekommt oben/unten großzügigen Abstand, damit das Formular auf allen Devices Luft zum Rand hat.-->
+  <div class="container py-5">
+    <!-- Zentriert den Inhalt horizontal // wobei .row Bootstrap flex Klasse ist und alle "childs" zu flex container macht-->
+    <div class="row justify-content-center">
+    <!-- Macht den Inhalt auf kleinen Screens 100% breit, auf mittleren Screens 8 von 12 Spalten (also ca. 66%), auf großen Screens 6 von 12 Spalten (also 50%) -->
+     <!--Handy (unter 768px) Nimmt 12 von 12 Spalten → volle Breite - Tablet (ab 768px)	Nimmt 8 von 12 Spalten → etwas schmaler. Laptop (ab 992px)	Nimmt 6 von 12 Spalten → halbe Breite-->
+     <div class="col-12 col-md-8 col-lg-6">
+        <!-- Ab hier gehts eigentlich los alles darüber war ja nur mal containern und zentralisierung um sich auf bootstrap utils zu konzentrieren, flexbox lernen ist komplex-->
+         <!--Hauptkarte mit Schatten-->
+        <main>
+            
+         <div class="card bg-info-subtle shadow-sm">
+          
+            <div class="card-body p-4 p-md-5"> 
+            <!-- ab hier dein bestehender Inhalt (Schritt 3 verfeinert ihn) -->
+
+            <h1 class="h3 text-center mb-2">Register for PortfolioBuddy</h1>
+            <p class="lead text-center mb-4">Sign up and track your investing performance</p>
+
+            <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
+            <form id="registerForm" action="/register.php" method="post">
+                  <div class="mb-3">
+                    
+                    <div class="d-flex align-items-center gap-3 ">
+                    <label for="fullname" class="form-label mb-0 flex-shrink-0" stly="width: 120px">Name</label> 
+                   <input id="fullname" name="fullname" type="text" inputmode="text" autocomplete="name" class="form-control" placeholder="Jane Doe"/>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mt-1">
+                    <label for="email" class="form-label mb-0 flex-shrink-0" style="width: 120px">E-mail</label>
+                   <input id="email" name="email" type="email" required autocomplete="email" class="form-control" placeholder="example@com"/>
+                   </div>
+                  
+                </div>
+            </form>
+
+
+            </div>
+          
+          </div>
+        </main>
+
+        <!-- Alles was außerhalb von main ist, gehört rein Logischer Struktur nicht zur register.html seite, also eher dann zur login seite-->
+        <p class="text-center mt-3">
+          Already have an account? <a class="small-link" href="/login">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+</body>
+
+
+
+
+
+
+<!-- Alte Version ohne Bootstrap --> 
+ <!-- Ich habs mal auskommentiert weil kein Bootstrap optimiert, keine Tags für Barrierefreiheit und screenreader-->
+<!--
 <body>
     <main class="card" role="main">
         <h1>Create your account</h1>
@@ -20,7 +128,7 @@
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
                 <div id="emailHelp" class="helper" aria-live="polite"></div>
-            </div>
+            </div>  
 
             <div class="field">
                 <label for="password">Password</label>
@@ -46,3 +154,5 @@
     </main>
 </body>
 </html>
+
+ENDE -->
