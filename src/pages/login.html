@@ -51,7 +51,22 @@
      <p class="mb-4 text-left">Weiter zum depot-tracker</p>
 
     <form>
-
+  
+      <label for="username" class="form-label">Username</label>
+      <input type="email" class="form-control" id="username" placeholder="Enter username" required>
+        <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Enter password" >
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+    <?php
+    include_once('login_functions.php');
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+      $username = sanitazon($_POST["username"]);
+      $password = sanitazon($_POST["password"]);
+    }
+    ?>
   </div>
 </div>
 
