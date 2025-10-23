@@ -1,60 +1,43 @@
 <?php
 /**
- * Simple input sanitization + validation helpers for login
+ * Minimal, safe validators for the login form.
+ * - Normalize POST values to strings (defends against arrays).
+ * - Validate email + password.
+ * - Do NOT html-escape here; escape only when rendering in HTML.
  */
 
-function sanitize_input(string $value): string {
-    return htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
+function get_field(array $src, string $key): string {
+    $v = $src[$key] ?? '';
+    if (is_array($v)) {
+        $first = reset($v);
+        $v = ($first === false) ? '' : $first;
+    }
+    return trim((string)$v);
 }
 
-function validate_email(string $email): array {
-    $clean = sanitize_input($email);
+function validate_login_input(array $post): array {
     $errors = [];
 
-    if ($clean === '') {
+    $email    = get_field($post, 'email');
+    $password = get_field($post, 'password');
+
+    // Email checks
+    if ($email === '') {
         $errors[] = 'Email is required.';
-    } elseif (!filter_var($clean, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Invalid email format.';
     }
 
-    return ['clean' => $clean, 'errors' => $errors];
-}
-
-function validate_password(string $password, int $minLength = 6): array {
-    $clean = sanitize_input($password);
-    $errors = [];
-
-    if ($clean === '') {
+    // Password checks (keep it simple)
+    if ($password === '') {
         $errors[] = 'Password is required.';
-    } elseif (strlen($clean) < $minLength) {
-        $errors[] = "Password must be at least {$minLength} characters.";
+    } elseif (strlen($password) < 6) {
+        $errors[] = 'Password must be at least 6 characters.';
     }
 
-    return ['clean' => $clean, 'errors' => $errors];
-}
-
-/**
- * Validate login form POST data.
- * Expects keys: 'email', 'password'
- * Returns: ['valid' => bool, 'errors' => array, 'clean' => array]
- */
-function validate_login_input(array $data): array {
-    $emailRes = validate_email($data['email'] ?? '');
-    $pwdRes   = validate_password($data['password'] ?? '');
-
-    $errors = [
-        'email' => $emailRes['errors'],
-        'password' => $pwdRes['errors']
-    ];
-
-    $flatErrors = array_merge($emailRes['errors'], $pwdRes['errors']);
-
     return [
-        'valid' => empty($flatErrors),
-        'errors' => $errors,
-        'clean' => [
-            'email' => $emailRes['clean'],
-            'password' => $pwdRes['clean']  // note: still sanitized, do not log/store plain
-        ]
+        'success' => empty($errors),
+        'errors'  => $errors,          // flat list for easy rendering
+        'data'    => ['email' => $email], // safe to refill email field
     ];
 }
