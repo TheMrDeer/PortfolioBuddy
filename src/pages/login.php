@@ -2,24 +2,28 @@
 require_once __DIR__ . '/login_functions.php';
 
 // Only treat POST as a form submission so validation doesn't run on normal GET requests.
-$isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
+
+$isPost = $_SERVER['REQUEST_METHOD'] === 'POST';  //verify ob es ein POST request ist
 
 // Start with a predictable shape so template logic can assume these keys exist.
-$result = ['success' => false, 'errors' => [], 'data' => []];
-
+$result = ['success' => false, 'errors' => [], 'data' => []]; //
+ 
 if ($isPost) {
     // Keep validation logic out of the template so we can test it separately and keep the view simple.
     $result = validate_login_input($_POST);
 }
+
 
 // Escape once at the point of output to centralize XSS protection and avoid double-escaping elsewhere.
 $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
 $errors = $result['errors'];
 $success = !empty($result['success']);
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
+ <!--Hier drinnen stehen META Tags, CSS, CDNS--> 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <!-- SEO Main Optimierung -->
@@ -60,8 +64,10 @@ $success = !empty($result['success']);
    -->
    
   <link rel="stylesheet" href="styleslogin.css">
-    <title>Login— PortfolioBuddy</title>
+  <title>Login— PortfolioBuddy</title>
+
 </head>
+
 <body class="min-vh-100 d-flex align-items-center">
   <div class="container">
     <div class="card shadow mx-auto" style="max-width:420px">
@@ -87,17 +93,15 @@ $success = !empty($result['success']);
 
         <form method="post" action="">
           <div class="mb-3">
-            <!-- Require attribute helps client-side UX but server-side validation is authoritative; keep both. -->
+            <!-- Require attribute helps client-side UX // but server-side validation is authoritative; keep both. -->
             <label for="email" class="form-label">E-Mail</label>
-            <input type="email" class="form-control" id="email" name="email"
-                  value="<?= $prefillEmail ?>" required>
+            <input type="email" class="form-control" id="email" name="email" value="<?= $prefillEmail ?>" required> <!--Mag es mehr in einer Zeile zu haben-->
           </div>
 
           <div class="mb-2">
             <!-- We don't prefill passwords for security; keep the field blank on every render. -->
             <label for="password" class="form-label">Passwort</label>
-            <input type="password" class="form-control" id="password" name="password"
-                  placeholder="••••••••" required>
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>. <!--Mag es mehr in einer Zeile zu haben-->
           </div>
 
           <!-- A POST submit keeps credentials out of the URL; button is placed after inputs for accessibility. -->

@@ -1,3 +1,17 @@
+<?php
+require_once __DIR__ . '/register_functions.php';
+
+ $isPostRequest = $_Server['REQUEST_METHOD'] === 'POST'; 
+ $result = ['success' => false, 'errors' => [], 'data' => []];
+  
+ if($isPostRequest) {
+  $result = 
+
+ }
+
+
+
+ ?> 
 <!doctype html>
 <html lang="en">
 <head>
@@ -41,7 +55,7 @@
    
    
   <link rel="stylesheet" href="styles.css">
-    <title>Register — PortfolioBuddy</title>
+ <title>Register — PortfolioBuddy</title>
 </head>
 
 <!-- BODY MIT BOOTSTRAP-KLASSEN FÜR RESPONSIVENESS UND STYLING -->
@@ -75,8 +89,8 @@
             <h1 class="h3 text-center mb-2">Register for PortfolioBuddy</h1>
             <p class="lead text-center mb-4">Sign up and track your investing performance</p>
 
-            <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
-            <form id="registerForm" action="/register.php" method="post">
+ <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
+  <form id="registerForm" action="/register.php" method="post">
   <!-- Full Name -->
   <div class="mb-3">
     <label for="fullname" class="form-label">Name</label>
@@ -144,7 +158,7 @@
 
   <!-- Divider -->
   <div>
-    <hr class="my-4" />
+    <hr class="my-4"/>
     <p class="text-center mb-3 auth-changer">Or use modern auth</p>
   </div>
 
@@ -170,14 +184,15 @@
 
         <!-- Alles was außerhalb von main ist, gehört rein Logischer Struktur nicht zur register.html seite, also eher dann zur login seite-->
         <p class="text-center mt-3">
-          Already have an account? <a class="small-link" href="/login">Sign in</a>
+          Already have an account? <a class="small-link" href="/login.php">Sign in</a>
         </p>
       </div>
     </div>
   </div>
 
 
-<script>//@CreatineAbuser magst du für sowas echt JS benutzen? :D weil müssen das ja auch erklären
+<script>//@CreatineAbuser magst du für sowas echt JS benutzen? :D weil müssen das ja auch erklären 
+       // @MrDeer naja, ist ja nur ne kleine Spielerei hier auf der register seite ;)  -> Kann dann bei goLive weg :)
   (function () {
     const words = [
       "Or use modern auth",
@@ -226,56 +241,5 @@
 
 
 
-</body>
-
-
-
-
-
-
-<!-- Alte Version ohne Bootstrap --> 
- <!-- Ich habs mal auskommentiert weil kein Bootstrap optimiert, keine Tags für Barrierefreiheit und screenreader-->
-<!--
-<body>
-    <main class="card" role="main">
-        <h1>Create your account</h1>
-        <p class="lead">Sign up with your email to start managing your portfolio.</p>
-
-        <form id="registerForm" action="/register" method="post">
-            <div class="field">
-                <label for="fullname">Full name</label>
-                <input id="fullname" name="fullname" type="text" inputmode="text" autocomplete="name" placeholder="Jane Doe">
-            </div>
-
-            <div class="field">
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
-                <div id="emailHelp" class="helper" aria-live="polite"></div>
-            </div>  
-
-            <div class="field">
-                <label for="password">Password</label>
-                <div class="pw-row">
-                    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" />
-                </div>
-                <div class="strength" aria-hidden="true"><i id="pwBar"></i></div>
-                <div id="pwHelp" class="helper" aria-live="polite">Use 8+ characters with a mix of letters, numbers, and symbols.</div>
-            </div>
-
-            <div class="field">
-                <label for="confirm">Confirm password</label>
-                <input id="confirm" name="confirm" type="password" required autocomplete="new-password" placeholder="Repeat your password" />
-                <div id="confirmHelp" class="error" aria-live="polite"></div>
-            </div>
-
-            <div class="field">
-                <button class="btn" id="submitBtn" type="submit">Create account</button>
-            </div>
-        </form>
-
-        <p class="meta">Already have an account? <a class="small-link" href="/login">Sign in</a></p>
-    </main>
-</body>
-</html>
-
-ENDE -->
+ </body>
+</html> 
