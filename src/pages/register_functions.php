@@ -29,7 +29,7 @@ function validate_register_input (array $postValue): array{
          }elseif (preg_match('/[\W_]/', $password) !== 1 ){
             $errors[] = 'Password must include at least one special character';}
 
-        if($passwordRepeat === ''){
+        if($passwordRepeat === '') {
             $errors[] = 'Please confirm your password';
         } elseif($password !== $passwordRepeat){
             $errors[] = 'Passwords do not match';

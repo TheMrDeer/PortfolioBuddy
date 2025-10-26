@@ -160,7 +160,7 @@ require_once __DIR__ . '/register_functions.php';
     <label for="confirm" class="form-label">Confirm Password</label>
     <input
       id="confirm"
-      name="confirm"
+      name="passwordRepeat"
       type="password"
       required
       autocomplete="new-password"
