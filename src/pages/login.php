@@ -102,7 +102,7 @@ $success = !empty($result['success']);
           <div class="mb-2">
             <!-- We don't prefill passwords for security; keep the field blank on every render. -->
             <label for="password" class="form-label">Passwort</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>. <!--Mag es mehr in einer Zeile zu haben-->
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required> <!--Mag es mehr in einer Zeile zu haben-->
           </div>
 
           <!-- A POST submit keeps credentials out of the URL; button is placed after inputs for accessibility. -->
