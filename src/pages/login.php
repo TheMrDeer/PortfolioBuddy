@@ -10,7 +10,7 @@ $result = ['success' => false, 'errors' => [], 'data' => []]; //
  
 if ($isPost) {
     // Keep validation logic out of the template so we can test it separately and keep the view simple.
-    $result = validate_login_input($_POST);
+    $result = validate_login_input($_POST);    
 }
 
 
@@ -18,6 +18,7 @@ if ($isPost) {
 $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
 $errors = $result['errors'];
 $success = !empty($result['success']);
+
 ?>
 
 <!doctype html>

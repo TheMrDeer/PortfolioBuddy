@@ -1,17 +1,19 @@
+
 <?php
 require_once __DIR__ . '/register_functions.php';
 
  $isPostRequest = $_Server['REQUEST_METHOD'] === 'POST'; 
  $result = ['success' => false, 'errors' => [], 'data' => []];
-  
- if($isPostRequest) {
-  $result = 
 
+
+ if($isPostRequest) {
+  $result = validate_register_input($_POST);
  }
 
+ 
+ ?>  
 
 
- ?> 
 <!doctype html>
 <html lang="en">
 <head>
@@ -123,6 +125,7 @@ require_once __DIR__ . '/register_functions.php';
   <!-- Password -->
   <div class="mb-3">
     <label for="password" class="form-label">Password</label>
+    <small class="form-text text-muted">must include at least one special character and one number.</small>
     <input
       id="password"
       name="password"

@@ -12,8 +12,8 @@
 function get_field(array $src, string $key): string { // Normalizes a field from the source array to a trimmed string; if the field is an array, takes the first element.
     $tempValue = $src[$key] ?? ''; // If the key is missing, return empty string.
     if (is_array($tempValue)) { // If the value is an array, take the first element. // Defends against malicious users sending arrays.
-        $first = reset($tempValue); // reset() returns false if the array is empty. // Get the first element of the array.
-        $tempValue = ($first === false) ? '' : $first; // Return empty string if array was empty, otherwise return the first element.?
+        $first = reset($tempValue); // reset() returns false if the "array" is empty or not an array. // & -> Gets the first element of the array.
+        $tempValue = ($first === false) ? '' : $first; // if false (weil empty (es muss array sein siehe if-Bedingung 14)) returned empty string
     }
     return trim((string)$tempValue); // Cast to string and trim "whitespace".
 }
@@ -35,8 +35,8 @@ function validate_login_input(array $post): array { // Validates login form inpu
     if ($password === '') { // Wenn password empty ist dann fehler
         $errors[] = 'Password is required.';    // Dann füge String in errors array hinzu
     } elseif (strlen($password) < 6) { // Wenn Passwort kürzer als 6 zeichen ist dann fehler // strlen gibt die länge des strings zurück 
-        $errors[] = 'Password must be at least 6 characters.';
-    }
+        $errors[] = 'Password must be at least 6 characters.'; // Obwohl das beim Login "Questionable" ist  bzw. kein "Clean Code", für übung wichtig 
+    } 
 
     return [
         'success' => empty($errors), // Wenn der error array leer ist dann return success "true" sonst false
