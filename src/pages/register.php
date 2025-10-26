@@ -10,6 +10,11 @@ require_once __DIR__ . '/register_functions.php';
   $result = validate_register_input($_POST);
  }
 
+    $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
+    $prefillFullname = htmlspecialchars($result['data']['fullname'] ?? '', ENT_QUOTES, 'UTF-8');
+    $errors = $result['errors'];
+    $success = !empty($result['success']);  
+
  
  ?>  
 
@@ -90,6 +95,18 @@ require_once __DIR__ . '/register_functions.php';
 
             <h1 class="h3 text-center mb-2">Register for PortfolioBuddy</h1>
             <p class="lead text-center mb-4">Sign up and track your investing performance</p>
+        <?php if ($isPostRequest && !empty($errors)): ?>
+            <div class="alert alert-danger" role="alert">
+                <ul class="mb-0">
+                <?php foreach ($errors as $err): ?>
+                    <li><?= htmlspecialchars(is_array($err) ? implode(', ', $err) : $err, ENT_QUOTES, 'UTF-8') ?></li>
+                <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php elseif ($isPostRequest && $success): ?>
+            <div class="alert alert-success" role="status">Registration successful (Debug)!</div>
+        <?php endif; ?>
+        
 
  <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
   <form id="registerForm" action="/register.php" method="post">

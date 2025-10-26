@@ -76,6 +76,8 @@ $success = !empty($result['success']);
         <h1 class="h4 mb-1">Einloggen</h1>
         <p class="text-secondary mb-4">Weiter zum Depot-Tracker</p>
 
+        <!-- Show errors or success message conditionally based on form submission and validation result. -->
+
         <?php if ($isPost && !empty($errors)): ?>
             <!-- Show validation feedback when the form was submitted; this keeps GETs clean and avoids confusing users. -->
             <div class="alert alert-danger" role="alert">
@@ -92,6 +94,7 @@ $success = !empty($result['success']);
             <div class="alert alert-success" role="status">Login erfolgreich (Debug)!</div>
         <?php endif; ?>
 
+        <!-- The login form itself. We prefill only the email field for UX; passwords are never prefilled for security reasons. -->
         <form method="post" action="">
           <div class="mb-3">
             <!-- Require attribute helps client-side UX // but server-side validation is authoritative; keep both. -->
