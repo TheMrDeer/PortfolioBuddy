@@ -2,7 +2,7 @@
 <?php
 require_once __DIR__ . '/register_functions.php';
 
- $isPostRequest = $_Server['REQUEST_METHOD'] === 'POST'; 
+ $isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST'; 
  $result = ['success' => false, 'errors' => [], 'data' => []];
 
 
