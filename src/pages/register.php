@@ -8,6 +8,13 @@ require_once __DIR__ . '/register_functions.php';
 
  if($isPostRequest) {
   $result = validate_register_input($_POST);
+   if($result['success']){ 
+    // Here you would typically handle successful registration, e.g., save to database
+
+    header('Location: /welcome.php'); // Redirect to a welcome page after successful registration
+    exit;
+   }  
+
  }
 
     $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
@@ -116,6 +123,7 @@ require_once __DIR__ . '/register_functions.php';
     <input 
       id="fullname"
       name="fullname"
+      value="<?= $prefillFullname ?>"
       type="text"
       inputmode="text"
       required
@@ -131,6 +139,7 @@ require_once __DIR__ . '/register_functions.php';
     <input
       id="email"
       name="email"
+      value="<?= $prefillEmail ?>"  
       type="email"
       required
       autocomplete="email"
@@ -178,7 +187,11 @@ require_once __DIR__ . '/register_functions.php';
 
   <!-- Divider -->
   <div>
-    <hr class="my-4"/>
+    <div class="d-flex align-items-center my-2">
+       <hr class="flex-grow-1">
+         <span class="px-2 text-muted text-uppercase">or</span>
+            <hr class="flex-grow-1">
+    </div>
     <p class="text-center mb-3 auth-changer">Or use modern auth</p>
   </div>
 
@@ -194,18 +207,11 @@ require_once __DIR__ . '/register_functions.php';
     </button>
   </div>
 </form>
+           
 
-
-
-            </div>
-          
-          </div>
         </main>
-
         <!-- Alles was außerhalb von main ist, gehört rein Logischer Struktur nicht zur register.html seite, also eher dann zur login seite-->
-        <p class="text-center mt-3">
-          Already have an account? <a class="small-link" href="/login.php">Sign in</a>
-        </p>
+        <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/login.php">Sign in</a></p>
       </div>
     </div>
   </div>

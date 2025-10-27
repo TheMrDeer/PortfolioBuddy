@@ -74,7 +74,7 @@ $success = !empty($result['success']);
     <div class="card shadow mx-auto" style="max-width:420px">
       <div class="card-body p-4">
         <h1 class="h4 mb-1">Einloggen</h1>
-        <p class="text-secondary mb-4">Weiter zum Depot-Tracker</p>
+         <p class="text-secondary mb-4">Weiter zum Depot-Tracker</p>
 
         <!-- Show errors or success message conditionally based on form submission and validation result. -->
 
@@ -96,27 +96,27 @@ $success = !empty($result['success']);
 
         <!-- The login form itself. We prefill only the email field for UX; passwords are never prefilled for security reasons. -->
         <form method="post" action="">
-          <div class="mb-3">
+           <div class="mb-3">
             <!-- Require attribute helps client-side UX // but server-side validation is authoritative; keep both. -->
-            <label for="email" class="form-label">E-Mail</label>
-            <input type="email" class="form-control" id="email" name="email" value="<?= $prefillEmail ?>" required> <!--Mag es mehr in einer Zeile zu haben-->
-          </div>
+             <label for="email" class="form-label">E-Mail</label>
+             <input type="email" class="form-control" id="email" name="email" value="<?= $prefillEmail ?>" required> 
+           </div>
 
           <div class="mb-2">
             <!-- We don't prefill passwords for security; keep the field blank on every render. -->
             <label for="password" class="form-label">Passwort</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required> <!--Mag es mehr in einer Zeile zu haben-->
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required> 
           </div>
 
-          <!-- A POST submit keeps credentials out of the URL; button is placed after inputs for accessibility. -->
-          <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-        </form>
+            <!-- A POST submit keeps credentials out of the URL; button is placed after inputs for accessibility. -->
+            <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+         </form>
 
-        <p class="text-center text-secondary mt-3 mb-0">
+         <p class="text-center text-secondary mt-3 mb-0">
           Noch kein Konto? <a href="register.php">Registrieren</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</body>
+         </p>
+       </div>
+     </div>
+   </div>
+ </body>
 </html>
