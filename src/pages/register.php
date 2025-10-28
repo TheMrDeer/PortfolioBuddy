@@ -9,9 +9,49 @@ require_once __DIR__ . '/register_functions.php';
  if($isPostRequest) {
   $result = validate_register_input($_POST);
    if($result['success']){ 
+    session_start();
     // Here you would typically handle successful registration, e.g., save to database
+      /*
+     $pdo = new PDO(
+        'mysql:host=127.0.0.1;dbname=portfoliobuddy;charset=utf8mb4',
+        'db_user',
+        'db_pass',
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
 
-    header('Location: /welcome.php'); // Redirect to a welcome page after successful registration
+    $stmt = $pdo->prepare(
+        'INSERT INTO users (email, fullname, password_hash) VALUES (:email, :fullname, :hash)'
+    );
+
+    $stmt->execute([
+        ':email'    => $result['data']['email'],
+        ':fullname' => $result['data']['fullname'],
+        ':hash'     => password_hash($postPassword, PASSWORD_DEFAULT),
+    ]);
+
+    $userId = (int)$pdo->lastInsertId();
+
+    $_SESSION['user'] = [
+        'id'       => $userId,
+        'fullname' => $result['data']['fullname'],
+        'email'    => $result['data']['email'],
+    ];
+
+      */
+
+      $tempFullname =  $result['data']['fullname'] ?? '';
+      $tempEmail = $result['data']['email'] ?? '';
+
+      // die Variablen sind testzwecke
+      $_SESSION['user'] = [
+        'id' => 1,
+        'fullname' => $tempFullname,
+        'email' => $tempEmail,
+
+      ];
+
+
+    header('Location: /dashboard.php'); // Redirect to a welcome page after successful registration
     exit;
    }  
 

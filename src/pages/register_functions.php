@@ -42,7 +42,7 @@ function validate_register_input (array $postValue): array{
         }
     return [
         'errors' => $errors,
-        'success' => !empty($errors),
+        'success' => empty($errors),
         'data' => [ 'email' => $email, 'fullname' => $fullname],
     ];
 
