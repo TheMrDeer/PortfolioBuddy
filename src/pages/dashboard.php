@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user'])) {
+    header('Location: /PortfolioBuddy/login.php');
+    exit;
+}
 ?>
 
 
@@ -36,44 +41,12 @@ session_start();
  <title>Dashboard</title>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">PortfolioBuddy</a>
+  <?php include '_navbar.php'; ?>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="dashNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link active" href="/dashboard.php">Overview</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/positions.php">Positions</a>
-        </li>
-      </ul>
-
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="" alt="Avatar" class="rounded-circle me-2" widt="28" height="28">
-             <span><?= htmlspecialchars($_SESSION['user']['fullname'],ENT_QUOTES,'UTF-8') ?></span>
-                </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-              <li><a class="dropdown-item" href="/profile.php">Profile</a></li>
-              <li><a class="dropdown-item" href="/settings.php">Settings</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="/logout.php">Logout</a></li>
-            </ul>
-          </li>
-        </ul>
-    </div>
+  <div class="container py-5">
+    <h1>Welcome to your Dashboard, <?= htmlspecialchars($_SESSION['user']['fullname'], ENT_QUOTES, 'UTF-8') ?>!</h1>
+    <p class="lead">This is where you'll see an overview of your portfolio.</p>
   </div>
-</nav>
-
 
 </body>
 </html>
-
-

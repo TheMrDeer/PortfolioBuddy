@@ -1,5 +1,6 @@
 
 <?php
+session_start();
 require_once __DIR__ . '/register_functions.php';
 
  $isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST'; 
@@ -8,53 +9,21 @@ require_once __DIR__ . '/register_functions.php';
 
  if($isPostRequest) {
   $result = validate_register_input($_POST);
-   if($result['success']){ 
-    session_start();
-    // Here you would typically handle successful registration, e.g., save to database
-      /*
-     $pdo = new PDO(
-        'mysql:host=127.0.0.1;dbname=portfoliobuddy;charset=utf8mb4',
-        'db_user',
-        'db_pass',
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
-
-    $stmt = $pdo->prepare(
-        'INSERT INTO users (email, fullname, password_hash) VALUES (:email, :fullname, :hash)'
-    );
-
-    $stmt->execute([
-        ':email'    => $result['data']['email'],
-        ':fullname' => $result['data']['fullname'],
-        ':hash'     => password_hash($postPassword, PASSWORD_DEFAULT),
-    ]);
-
-    $userId = (int)$pdo->lastInsertId();
-
-    $_SESSION['user'] = [
-        'id'       => $userId,
-        'fullname' => $result['data']['fullname'],
-        'email'    => $result['data']['email'],
-    ];
-
-      */
-
-      $tempFullname =  $result['data']['fullname'] ?? '';
-      $tempEmail = $result['data']['email'] ?? '';
-
-      // die Variablen sind testzwecke
-      $_SESSION['user'] = [
-        'id' => 1,
-        'fullname' => $tempFullname,
-        'email' => $tempEmail,
-
-      ];
-
-
-    header('Location: /dashboard.php'); // Redirect to a welcome page after successful registration
-    exit;
-   }  
-
+   if ($result['success']) {
+       // In a real application, you would save the user to the database here
+       // and get a new user ID. For now, we use a placeholder.
+       $newUserId = 1; // Placeholder
+ 
+       $_SESSION['user'] = [
+           'id'       => $newUserId,
+           'fullname' => $result['data']['fullname'],
+           'email'    => $result['data']['email'],
+       ];
+ 
+       // Redirect to the dashboard after successful registration
+       header('Location: /PortfolioBuddy/dashboard.php');
+       exit;
+   }
  }
 
     $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
@@ -156,7 +125,7 @@ require_once __DIR__ . '/register_functions.php';
         
 
  <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
-  <form id="registerForm" action="/register.php" method="post">
+  <form id="registerForm" action="/PortfolioBuddy/register.php" method="post">
   <!-- Full Name -->
   <div class="mb-3">
     <label for="fullname" class="form-label">Name</label>
@@ -251,7 +220,7 @@ require_once __DIR__ . '/register_functions.php';
 
         </main>
         <!-- Alles was außerhalb von main ist, gehört rein Logischer Struktur nicht zur register.html seite, also eher dann zur login seite-->
-        <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/login.php">Sign in</a></p>
+        <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/PortfolioBuddy/login.php">Sign in</a></p>
       </div>
     </div>
   </div>

@@ -1,7 +1,6 @@
 <?php
+session_start();
 require_once __DIR__ . '/login_functions.php';
-
-// Only treat POST as a form submission so validation doesn't run on normal GET requests.
 
 $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';  //verify ob es ein POST request ist
 
@@ -9,8 +8,20 @@ $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';  //verify ob es ein POST reques
 $result = ['success' => false, 'errors' => [], 'data' => []]; //
  
 if ($isPost) {
-    // Keep validation logic out of the template so we can test it separately and keep the view simple.
-    $result = validate_login_input($_POST);    
+    $result = validate_login_input($_POST);
+
+    if ($result['success']) {
+        // In a real application, you would fetch the user from the database here.
+        // For now, we'll create a placeholder user session.
+        $_SESSION['user'] = [
+            'id'       => 1, // Placeholder ID
+            'fullname' => 'Logged-in User', // Placeholder name
+            'email'    => $result['data']['email'],
+        ];
+
+        header('Location: /PortfolioBuddy/dashboard.php');
+        exit;
+    }
 }
 
 
@@ -89,9 +100,6 @@ $success = !empty($result['success']);
                 <?php endforeach; ?>
               </ul>
             </div>
-        <?php elseif ($isPost && $success): ?>
-            <!-- A simple success message is useful during development; in production you'd redirect to a protected area instead. -->
-            <div class="alert alert-success" role="status">Login erfolgreich (Debug)!</div>
         <?php endif; ?>
 
         <!-- The login form itself. We prefill only the email field for UX; passwords are never prefilled for security reasons. -->
@@ -113,7 +121,7 @@ $success = !empty($result['success']);
          </form>
 
          <p class="text-center text-secondary mt-3 mb-0">
-          Noch kein Konto? <a href="register.php">Registrieren</a>
+          Noch kein Konto? <a href="/PortfolioBuddy/register.php">Registrieren</a>
          </p>
        </div>
      </div>
