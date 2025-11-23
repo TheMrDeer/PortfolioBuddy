@@ -105,8 +105,8 @@ $errors = $result['errors'];
                                 <?= !$isEditMode ? 'readonly' : '' ?>
                             />
                         </div>
-
-                        <div class "mb-3">
+                        
+                        <div class="mb-3">
                             <label for="profile_picture" class=form-label>Profile Picture</>
                             <input
                                 id="profile_picture"
@@ -114,7 +114,7 @@ $errors = $result['errors'];
                                 type="file"
                                 class="form-control"
                                 <?= !$isEditMode ? 'disabled' : '' ?>
-                            label
+                            />
                         </div>
 
                         <!-- Action Buttons -->
