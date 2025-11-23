@@ -20,6 +20,10 @@ if ($isPost) {
     // Validate the submitted data
     $result = validate_profile_input($_POST);
 
+    $pathUploadRoot = __DIR__ . '/user_uploads';
+    $userFolder    = $pathUploadRoot . '/' . $user['id']. '/profilepicture';
+    move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $userFolder . '/' . basename($_FILES["profile_picture"]["name"]));
+
     if ($result['success']) {
         // On successful validation, update the session data.
         // In a real application, you would update the database here.
@@ -75,7 +79,7 @@ $errors = $result['errors'];
                         </div>
                     <?php endif; ?>
 
-                    <form method="post" action="/PortfolioBuddy/profile.php">
+                    <form method="post" enctype="multipart/form-data" action="/PortfolioBuddy/profile.php">
                         <!-- Full Name -->
                         <div class="mb-3">
                             <label for="fullname" class="form-label">Full Name</label>
@@ -100,6 +104,17 @@ $errors = $result['errors'];
                                 value="<?= $prefillEmail ?>"
                                 <?= !$isEditMode ? 'readonly' : '' ?>
                             />
+                        </div>
+
+                        <div class "mb-3">
+                            <label for="profile_picture" class=form-label>Profile Picture</>
+                            <input
+                                id="profile_picture"
+                                name="profile_picture"
+                                type="file"
+                                class="form-control"
+                                <?= !$isEditMode ? 'disabled' : '' ?>
+                            label
                         </div>
 
                         <!-- Action Buttons -->

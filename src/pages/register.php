@@ -20,6 +20,17 @@ if (isset($_SESSION['user'])) {
        // In a real application, you would save the user to the database here
        // and get a new user ID. For now, we use a placeholder.
        $newUserId = 1; // Placeholder
+       $uploadRoot = __DIR__ . '/user_uploads';
+       $userFolder    = $uploadRoot . '/' . $newUserId;
+       $profileFolder = $userFolder . '/profilepicture';
+       $assetFolder   = $userFolder . '/asset_attachment';
+       foreach ([$userFolder, $profileFolder, $assetFolder] as $dir) {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+    }
+
+
  
        $_SESSION['user'] = [
            'id'       => $newUserId,

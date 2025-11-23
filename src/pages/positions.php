@@ -12,8 +12,13 @@ $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
 if ($isPost) {
     // Asset submission logic will go here.
     // For now, we can just acknowledge the submission for debugging.
-    // echo "<pre>Form submitted:\n"; print_r($_POST); print_r($_FILES); echo "</pre>";
+  mkdir("user_uploads/".$_SESSION['user']['id']."/"."asset_attachment/".$_POST['asset_ISIN'], 0755, true);
+  // echo "<pre>Form submitted:\n"; print_r($_POST); print_r($_FILES); echo "</pre>";
+  $targetFileName= "user_uploads/".$_SESSION['user']['id']."/"."asset_attachment/".$_POST['asset_ISIN']."/".basename($_FILES["asset_file"]["name"]);
+  move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetFileName);
 }
+
+
 ?>
 <!doctype html>
 <html lang="en">
