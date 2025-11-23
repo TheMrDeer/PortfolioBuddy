@@ -1,6 +1,7 @@
 <?php
 $currentPage = basename($_SERVER['SCRIPT_NAME']);
 ?>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/PortfolioBuddy/dashboard.php">PortfolioBuddy</a>
@@ -27,9 +28,8 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
                         <li><a class="dropdown-item <?= ($currentPage === 'profile.php') ? 'active' : '' ?>" href="/PortfolioBuddy/profile.php">Profile</a></li>
-                        <li><a class="dropdown-item <?= ($currentPage === 'settings.php') ? 'active' : '' ?>" href="/PortfolioBuddy/settings.php">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/PortfolioBuddy/logout.php">Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href="/PortfolioBuddy/logout.php" >Logout</a></li>
                     </ul>
                 </li>
             </ul>

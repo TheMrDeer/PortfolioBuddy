@@ -5,7 +5,6 @@
 //Sanitizing -> Werte zu Strings zwingen trimmen, Arrays abfangen, ggf unerwünschte Zeichen entfernen
 //Validierung -> Regeln prüfen wie Pflichtfeld,Format,Werteberech,Passwordgleichehit.
 
-
 function validate_register_input (array $postValue): array{
     $errors = [];
 
@@ -45,17 +44,5 @@ function validate_register_input (array $postValue): array{
         'success' => empty($errors),
         'data' => [ 'email' => $email, 'fullname' => $fullname],
     ];
-
-}
-
-
-// Kurzer Input von mir: Ist coding style, aber ich persönlich würds bei einer TempVariable belassen -> da man sieht die ändert sich explizit.
-function get_field(array $valueSource , string $key): string{
-$temp = $valueSource[$key] ?? '';  
-if(is_array($temp)){
-    $temp = reset($temp);
-    $temp = ($temp === false) ?'' : $temp;
-}
-return trim((string)$temp);
 
 }

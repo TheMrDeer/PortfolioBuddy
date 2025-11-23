@@ -14,7 +14,6 @@ if ($isPost) {
     // For now, we can just acknowledge the submission for debugging.
     // echo "<pre>Form submitted:\n"; print_r($_POST); print_r($_FILES); echo "</pre>";
 }
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,11 +22,11 @@ if ($isPost) {
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>My Positions — PortfolioBuddy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<?php include '_navbar.php'; ?>
+<?php include __DIR__ .'/includes/_navbar.php'; ?>
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -46,6 +45,11 @@ if ($isPost) {
                         <div class="mb-3">
                             <label for="assetName" class="form-label">Aktienname</label>
                             <input type="text" class="form-control" id="assetName" name="asset_name" placeholder="z.B. Apple Inc." required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="assetISIN" class="form-label">ISIN</label>
+                            <input type="text" class="form-control" id="assetISIN" name="asset_ISIN" placeholder="z.B. Apple Inc." required>
                         </div>
 
                         <div class="row">
@@ -146,6 +150,5 @@ if ($isPost) {
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 <?php
 session_start();
-require_once __DIR__ . '/profile_functions.php';
+require_once __DIR__ . '/util/profile_functions.php';
 
+require_once __DIR__ . '/util/utils.php';
 // If user is not logged in, redirect to login page.
 if (!isset($_SESSION['user'])) {
     header('Location: /PortfolioBuddy/login.php');
@@ -47,11 +48,11 @@ $errors = $result['errors'];
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>My Profile — PortfolioBuddy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<?php include '_navbar.php'; // Using a shared navbar for consistency ?>
+<?php include __DIR__ .'/includes/_navbar.php'; ?>
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -116,7 +117,5 @@ $errors = $result['errors'];
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
