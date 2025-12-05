@@ -242,7 +242,6 @@ if ($isPostRequest) {
          <span class="px-2 text-muted text-uppercase">or</span>
             <hr class="flex-grow-1">
     </div>
-    <p class="text-center mb-3 auth-changer">Or use modern auth</p>
   </div>
 
   <!-- OAuth / Google Sign Up -->
@@ -265,57 +264,6 @@ if ($isPostRequest) {
       </div>
     </div>
   </div>
-
-
-<script>//@CreatineAbuser magst du für sowas echt JS benutzen? :D weil müssen das ja auch erklären 
-       // @MrDeer naja, ist ja nur ne kleine Spielerei hier auf der register seite ;)  -> Kann dann bei goLive weg :)
-  (function () {
-    const words = [
-      "Or use modern auth",
-      "SSO",
-      "OAuth2",
-      "Magic links"
-    ];
-    const glitchChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%";
-    const target = document.querySelector(".auth-changer");
-    if (!target) return;
-
-    let index = 0;
-    const glitchDuration = 400;
-    const frameInterval = 40;
-    const swapInterval = 2800;
-
-    const runGlitch = (nextWord) => {
-      const start = performance.now();
-      target.classList.add("glitching");
-
-      const update = (now) => {
-        const elapsed = now - start;
-        if (elapsed >= glitchDuration) {
-          target.textContent = nextWord;
-          target.classList.remove("glitching");
-          return;
-        }
-
-        const scrambled = Array.from(nextWord)
-          .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
-          .join("");
-
-        target.textContent = scrambled;
-        setTimeout(() => requestAnimationFrame(update), frameInterval);
-      };
-
-      requestAnimationFrame(update);
-    };
-
-    setInterval(() => {
-      index = (index + 1) % words.length;
-      runGlitch(words[index]);
-    }, swapInterval);
-  })();
-</script>
-
-
 
  </body>
 </html> 
