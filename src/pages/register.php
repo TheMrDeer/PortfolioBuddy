@@ -1,57 +1,112 @@
-
 <?php
 session_start();
+require_once __DIR__ . '/includes/dbaccess.php'; // Deine PDF-Variablen ($host, $user, etc.)
 require_once __DIR__ . '/util/register_functions.php';
 require_once __DIR__ . '/util/utils.php';
 
-// If the user is already logged in, redirect them to the dashboard.
+// Wenn User schon eingeloggt, weg hier
 if (isset($_SESSION['user'])) {
     header('Location: /PortfolioBuddy/dashboard.php');
     exit;
 }
 
- $isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST'; 
- $result = ['success' => false, 'errors' => [], 'data' => []];
+$isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST'; 
 
+// 1. Variablen IMMER initialisieren (damit keine "Undefined variable" Warnung kommt)
+$prefillFullname = '';
+$prefillEmail    = '';
+$errors          = [];
+$success         = false;
 
- if($isPostRequest) {
-  $result = validate_register_input($_POST);
-   if ($result['success']) {
-       // In a real application, you would save the user to the database here
-       // and get a new user ID. For now, we use a placeholder.
-       $newUserId = 1; // Placeholder
-       $uploadRoot = __DIR__ . '/user_uploads';
-       $userFolder    = $uploadRoot . '/' . $newUserId;
-       $profileFolder = $userFolder . '/profilepicture';
-       $assetFolder   = $userFolder . '/asset_attachment';
-       foreach ([$userFolder, $profileFolder, $assetFolder] as $dir) {
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
+if ($isPostRequest) {
+    // Validierung
+    $result = validate_register_input($_POST);
+    $errors = $result['errors'];
+
+    // Wenn Validierung fehlschlägt, die eingegebenen Daten zurück in die Felder schreiben
+    // Damit der User nicht alles neu tippen muss.
+    if (!$result['success']) {
+        $prefillFullname = htmlspecialchars($_POST['fullname'] ?? '', ENT_QUOTES, 'UTF-8');
+        $prefillEmail    = htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8');
     }
 
+    if ($result['success']) {
+        
+        // 2. Datenbankverbindung (PDF Folie 5)
+        // Wir nutzen $host, $user, $password, $database aus dbaccess.php
+        $db_obj = new mysqli($host, $user, $password, $database);
 
- 
-       $_SESSION['user'] = [
-           'id'       => $newUserId,
-           'fullname' => $result['data']['fullname'],
-           'email'    => $result['data']['email'],
-       ];
- 
-       // Redirect to the dashboard after successful registration
-       header('Location: /PortfolioBuddy/dashboard.php');
-       exit;
-   }
- }
+        // Verbindung prüfen
+        if ($db_obj->connect_error) {
+            echo "Connection Error: " . $db_obj->connect_error;
+            exit();
+        }
 
-    $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
-    $prefillFullname = htmlspecialchars($result['data']['fullname'] ?? '', ENT_QUOTES, 'UTF-8');
-    $errors = $result['errors'];
-    $success = !empty($result['success']);  
+        // Passwort hashen (PDF Folie 23)
+        $passwordHash = password_hash($_POST["password"], PASSWORD_DEFAULT);
+        
+        // Variablen vorbereiten
+        $uname = $result['data']['fullname'];
+        $mail  = $result['data']['email'];
+        $pass  = $passwordHash;
 
- 
- ?>  
+        // 3. SQL Statement vorbereiten (PDF Folie 13)
+        $sql = "INSERT INTO `users` (`fullname`, `email`, `password_hash`) VALUES (?, ?, ?)";
+        $stmt = $db_obj->prepare($sql);
 
+        // 4. Parameter binden (PDF Folie 15)
+        // "sss" -> String, String, String
+        $stmt->bind_param("sss", $uname, $mail, $pass);
+
+        // 5. Ausführen (PDF Folie 16/23)
+        if ($stmt->execute()) {
+            
+            // ID für Ordner holen
+            $newUserId = $db_obj->insert_id;
+
+            // Ordnerstruktur anlegen
+            $uploadRoot = __DIR__ . '/user_uploads';
+            $userFolder    = $uploadRoot . '/' . $newUserId;
+            $profileFolder = $userFolder . '/profilepicture';
+            $assetFolder   = $userFolder . '/asset_attachment';
+            
+            foreach ([$userFolder, $profileFolder, $assetFolder] as $dir) {
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+            }
+
+            // Session starten (Login)
+            $_SESSION['user'] = [
+                'id'       => $newUserId,
+                'fullname' => $uname,
+                'email'    => $mail,
+                'role'     => 'user'
+            ];
+
+            // Redirect
+            header('Location: /PortfolioBuddy/dashboard.php');
+            exit;
+
+        } else {
+            // Fehler (z.B. E-Mail schon vergeben)
+            // Error Code 1062 ist "Duplicate entry"
+            if ($db_obj->errno === 1062) {
+                $errors[] = "Diese E-Mail-Adresse wird bereits verwendet.";
+            } else {
+                $errors[] = "Datenbankfehler: " . $stmt->error;
+            }
+            // Auch im Fehlerfall Felder gefüllt lassen
+            $prefillFullname = htmlspecialchars($uname, ENT_QUOTES, 'UTF-8');
+            $prefillEmail    = htmlspecialchars($mail, ENT_QUOTES, 'UTF-8');
+        }
+
+        // Aufräumen (PDF Folie 23)
+        $stmt->close();
+        $db_obj->close();
+    }
+}
+?>
 
 <!doctype html>
 <html lang="en">
