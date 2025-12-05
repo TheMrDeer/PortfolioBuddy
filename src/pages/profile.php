@@ -20,9 +20,16 @@ if ($isPost) {
     // Validate the submitted data
     $result = validate_profile_input($_POST);
 
-    $pathUploadRoot = __DIR__ . '/user_uploads';
-    $userFolder    = $pathUploadRoot . '/' . $user['id']. '/profilepicture';
-    move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $userFolder . '/' . basename($_FILES["profile_picture"]["name"]));
+    // Profilbild speichern, falls eine Datei hochgeladen wurde
+    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        $pathUploadRoot = __DIR__ . '/user_uploads';
+        $userFolder     = $pathUploadRoot . '/' . $user['id'] . '/profilepicture';
+        if (!is_dir($userFolder)) {
+            mkdir($userFolder, 0755, true);
+        }
+        $targetPath = $userFolder . '/' . basename($_FILES['profile_picture']['name']);
+        move_uploaded_file($_FILES['profile_picture']['tmp_name'], $targetPath);
+    }
 
     if ($result['success']) {
         // On successful validation, update the session data.
