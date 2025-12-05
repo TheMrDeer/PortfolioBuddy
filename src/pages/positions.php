@@ -42,8 +42,7 @@ if ($isPost) {
             $errors[] = "Verbindungsfehler: " . $db_obj->connect_error;
         } else {
             // SQL für Insert (PDF-Konform: Prepared Statements)
-            $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`, `quantity`, `purchase_price`, `purchase_date`) VALUES (?, ?, ?, ?, ?, ?)";
-            
+            $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`, `quantity`, `purchase_price`, `purchase_date`, `asset_type`) VALUES (?, ?, ?, ?, ?, ?, ?)";            
             $stmt = $db_obj->prepare($sql);
             
             // Parameter binden:
