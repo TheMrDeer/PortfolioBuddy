@@ -12,5 +12,5 @@ function get_field(array $source, string $key): string
     if (is_array($value)) {
         $value = reset($value); // Gets the first element, or false if empty.
     }
-    return trim((string)$value);
+    return htmlspecialchars(trim((string)$value));
 }

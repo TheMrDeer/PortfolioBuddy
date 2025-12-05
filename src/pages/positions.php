@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+require_once __DIR__ . '/includes/dbaccess.php'; // $host, $user, $pass, $db
 // If user is not logged in, redirect to login page.
 if (!isset($_SESSION['user'])) {
     header('Location: /PortfolioBuddy/login.php');
@@ -16,7 +16,54 @@ if ($isPost) {
   // echo "<pre>Form submitted:\n"; print_r($_POST); print_r($_FILES); echo "</pre>";
   $targetFileName= "user_uploads/".$_SESSION['user']['id']."/"."asset_attachment/".$_POST['asset_ISIN']."/".basename($_FILES["asset_file"]["name"]);
   move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetFileName);
-}
+
+$result = validate_positions_input($_POST);
+$errors = $result['errors'];
+
+   
+
+    // Wenn Validierung fehlschlägt, die eingegebenen Daten zurück in die Felder schreiben
+    // Damit der User nicht alles neu tippen muss.
+    
+    if ($result['success']) {
+    
+        $db_obj = new mysqli($host, $user, $pass, $db);
+
+        // Verbindung prüfen
+        if ($db_obj->connect_error) {
+            echo "Connection Error: " . $db_obj->connect_error;
+            exit();
+        }
+
+        
+        // Variablen vorbereiten
+        $assetname = $result['data']['asset_name'];
+        $assetISIN  = $result['data']['asset_ISIN'];
+        $quantity = $result['data']['quantity'];
+        $purchaseprice = $result['data']['purchase_price'];
+        $purchasedate = $result['data']['purchase_date'];
+        $assetType = 'stock'; // Hardcoded for now
+        $userId = $_SESSION['user']['id'];
+
+        // 3. SQL Statement vorbereiten (PDF Folie 13)
+        $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`,'quantity','purchase_price','purchase_date','asset_type') VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $db_obj->prepare($sql);
+
+        // 4. Parameter binden (PDF Folie 15)
+        // "sss" -> String, String, String
+        $stmt->bind_param("issddds", $userID, $assetname, $assetISIN, $quantity, $purchaseprice, $purchasedate, $assetType);
+
+        // 5. Ausführen (PDF Folie 16/23)
+        if ($stmt->execute()) {
+        
+
+
+        // Aufräumen (PDF Folie 23)
+        $stmt->close();
+        $db_obj->close();
+    }
+}}
+?>
 
 
 ?>
