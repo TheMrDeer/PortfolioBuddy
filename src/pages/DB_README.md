@@ -46,6 +46,9 @@ USE `portfoliobuddy`;
 CREATE USER IF NOT EXISTS 'portfoliobuddy_db'@'localhost' IDENTIFIED BY 'KUybM[Ud/_HOLvHw';
 GRANT ALL PRIVILEGES ON portfoliobuddy.* TO 'portfoliobuddy_db'@'localhost';
 FLUSH PRIVILEGES;
+'''
+```
+```sql
 
 --User Tabele
 CREATE TABLE `users` (
@@ -73,7 +76,7 @@ CREATE TABLE `assets` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `assets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+```
 ## 3. Systemarchitektur
 
 Das System basiert auf einer relationalen Datenbank und PHP-Sessions.
@@ -98,7 +101,7 @@ Authentifizierung & Sicherheit
 Dateien (wie Profilbilder oder Kaufbelege) werden nicht in der Datenbank gespeichert, sondern im Dateisystem, um die Performance zu schonen.
 
 Die Struktur wird dynamisch generiert:
-Plaintext
+```Plaintext
 
 src/pages/user_uploads/
 ├── {USER_ID}/                  # Ordner für jeden Benutzer (z.B. "1")
@@ -107,7 +110,7 @@ src/pages/user_uploads/
 │   └── asset_attachment/       # Kaufbelege
 │       ├── {ASSET_ID}/         # Unterordner pro Aktie (z.B. "42")
 │       │   └── rechnung.pdf
-
+```
     Logik: Beim Erstellen einer Position (INSERT) wird die neue asset_id ermittelt und der entsprechende Ordner angelegt.
 
     Vorteil: Auch wenn ein User mehrmals die gleiche Aktie kauft, kommen sich die Dateien nicht in die Quere, da sie in Ordnern basierend auf der eindeutigen ID der Transaktion liegen.
