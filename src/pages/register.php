@@ -33,8 +33,8 @@ if ($isPostRequest) {
     if ($result['success']) {
         
         // 2. Datenbankverbindung (PDF Folie 5)
-        // Wir nutzen $host, $user, $password, $database aus dbaccess.php
-        $db_obj = new mysqli($host, $user, $password, $database);
+        // Wir nutzen $host, $user, $pass, $db aus dbaccess.php
+        $db_obj = new mysqli($host, $user, $pass, $db);
 
         // Verbindung prüfen
         if ($db_obj->connect_error) {
