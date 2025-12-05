@@ -10,7 +10,7 @@ function validate_asset_input(array $post, array $files = []): array
 
     // Wir nutzen deine get_field helper funktion (muss im aufrufenden Skript via utils.php eingebunden sein)
     $name = get_field($post, 'asset_name');
-    $isin = get_fielda($post, 'asset_ISIN');
+    $isin = get_field($post, 'asset_ISIN');
     $quantity = get_field($post, 'quantity');
     $price = get_field($post, 'purchase_price');
     $date = get_field($post, 'purchase_date');

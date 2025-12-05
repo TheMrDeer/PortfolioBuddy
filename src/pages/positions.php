@@ -1,71 +1,103 @@
 <?php
 session_start();
-require_once __DIR__ . '/includes/dbaccess.php'; // $host, $user, $pass, $db
-// If user is not logged in, redirect to login page.
+
+// 1. Alle notwendigen Dateien einbinden
+require_once __DIR__ . '/includes/dbaccess.php';          // Datenbank-Zugangsdaten
+require_once __DIR__ . '/util/utils.php';                 // Hilfsfunktionen (get_field)
+require_once __DIR__ . '/util/positions_functions.php';   
+
+// Login-Check
 if (!isset($_SESSION['user'])) {
     header('Location: /PortfolioBuddy/login.php');
     exit;
 }
 
-// Placeholder for form submission handling in the future
 $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
+// Variablen initialisieren
+$errors = [];
+$successMessage = '';
+ 
+$name = '';
+$isin = '';
+$qty  = '';
+$price = '';
+$date = '';
+
 if ($isPost) {
-    // Asset submission logic will go here.
-    // For now, we can just acknowledge the submission for debugging.
-  mkdir("user_uploads/".$_SESSION['user']['id']."/"."asset_attachment/".$_POST['asset_ISIN'], 0755, true);
-  // echo "<pre>Form submitted:\n"; print_r($_POST); print_r($_FILES); echo "</pre>";
-  $targetFileName= "user_uploads/".$_SESSION['user']['id']."/"."asset_attachment/".$_POST['asset_ISIN']."/".basename($_FILES["asset_file"]["name"]);
-  move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetFileName);
+    // 2. Validierung aufrufen 
+    $result = validate_asset_input($_POST, $_FILES);
 
-$result = validate_assets_input($_POST);
-$errors = $result['errors'];
+    // Daten für Prefill übernehmen (damit User nicht neu tippen muss) html specialchars denk ich unnötig hier wegen get_field innerhalb von input validierung specialchars ist dort enthalten
+    $name  = htmlspecialchars($result['data']['name'] ?? '', ENT_QUOTES, 'UTF-8');
+    $isin  = htmlspecialchars($result['data']['isin'] ?? '', ENT_QUOTES, 'UTF-8');
+    $qty   = htmlspecialchars($_POST['quantity'] ?? '', ENT_QUOTES, 'UTF-8');
+    $price = htmlspecialchars($_POST['purchase_price'] ?? '', ENT_QUOTES, 'UTF-8');
+    $date  = htmlspecialchars($result['data']['date'] ?? '', ENT_QUOTES, 'UTF-8');
 
-   
-
-    // Wenn Validierung fehlschlägt, die eingegebenen Daten zurück in die Felder schreiben
-    // Damit der User nicht alles neu tippen muss.
-    
     if ($result['success']) {
-    
+        // Daten sind gültig -> In Datenbank speichern
+        
         $db_obj = new mysqli($host, $user, $pass, $db);
-
-        // Verbindung prüfen
         if ($db_obj->connect_error) {
-            echo "Connection Error: " . $db_obj->connect_error;
-            exit();
+            $errors[] = "Verbindungsfehler: " . $db_obj->connect_error;
+        } else {
+            // SQL für Insert (PDF-Konform: Prepared Statements)
+            $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`, `quantity`, `purchase_price`, `purchase_date`) VALUES (?, ?, ?, ?, ?, ?)";
+            
+            $stmt = $db_obj->prepare($sql);
+            
+            // Parameter binden:
+            // i = integer (user_id)
+            // s = string (name, isin, date)
+            // d = double (quantity, price)
+            $userId = $_SESSION['user']['id'];
+            $valQty = $result['data']['quantity'];
+            $valPrice = $result['data']['price'];
+            
+            // Typen: i (int), s (string), s (string), d (double), d (double), s (string)
+            $stmt->bind_param("issdds", $userId, $name, $isin, $valQty, $valPrice, $date);
+
+            if ($stmt->execute()) {
+                $newAssetId = $db_obj->insert_id;
+                $successMessage = "Position erfolgreich gespeichert!";
+
+                // --- Datei-Upload Handling (nur wenn erfolgreich gespeichert) ---
+                if (isset($_FILES['asset_file']) && $_FILES['asset_file']['error'] === UPLOAD_ERR_OK) {
+                    
+                    // Sicherer Pfad: user_uploads/USER_ID/asset_attachment/ASSET_ID/
+                    // Wir nutzen die Asset-ID statt der ISIN, damit sich Dateien bei gleicher Aktie nicht überschreiben.
+                    $targetDir = __DIR__ . "/user_uploads/" . $userId . "/asset_attachment/" . $newAssetId;
+
+                    // mkdir fix: Nur erstellen, wenn nicht existiert
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0755, true);
+                    }
+
+                    $fileName = basename($_FILES["asset_file"]["name"]);
+                    $targetFilePath = $targetDir . "/" . $fileName;
+
+                    if (move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetFilePath)) {
+                        
+                    } else {
+                        $errors[] = "Position gespeichert, aber Datei konnte nicht hochgeladen werden.";
+                    }
+                }
+
+                // Formular leeren nach Erfolg
+                $name = $isin = $qty = $price = $date = ''; 
+
+            } else {
+                $errors[] = "Datenbankfehler: " . $stmt->error;
+            }
+
+            $stmt->close();
+            $db_obj->close();
         }
 
-        
-        // Variablen vorbereiten
-        $assetname = $result['data']['asset_name'];
-        $assetISIN  = $result['data']['asset_ISIN'];
-        $quantity = $result['data']['quantity'];
-        $purchaseprice = $result['data']['purchase_price'];
-        $purchasedate = $result['data']['purchase_date'];
-        $assetType = 'stock'; // Hardcoded for now
-        $userId = $_SESSION['user']['id'];
-
-        // 3. SQL Statement vorbereiten (PDF Folie 13)
-        $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`,'quantity','purchase_price','purchase_date','asset_type') VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $db_obj->prepare($sql);
-
-        // 4. Parameter binden (PDF Folie 15)
-        // "sss" -> String, String, String
-        $stmt->bind_param("issddds", $userID, $assetname, $assetISIN, $quantity, $purchaseprice, $purchasedate, $assetType);
-
-        // 5. Ausführen (PDF Folie 16/23)
-        if ($stmt->execute()) {
-        
-
-
-        // Aufräumen (PDF Folie 23)
-        $stmt->close();
-        $db_obj->close();
+    } else {
+        $errors = $result['errors'];
     }
-}}
-?>
-
-
+}
 ?>
 <!doctype html>
 <html lang="en">
