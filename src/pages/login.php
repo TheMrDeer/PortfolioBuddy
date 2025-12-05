@@ -1,4 +1,5 @@
 <?php
+session_start(); // Sessions müssen früh gestartet werden, damit wir später Login-Daten setzen können.
 require_once __DIR__ . '/login_functions.php';
 
 // Only treat POST as a form submission so validation doesn't run on normal GET requests.
@@ -11,13 +12,24 @@ $result = ['success' => false, 'errors' => [], 'data' => []]; //
 if ($isPost) {
     // Keep validation logic out of the template so we can test it separately and keep the view simple.
     $result = validate_login_input($_POST);    
+
+    // Bei erfolgreicher Validierung Benutzerinfo in die Session legen und zum Dashboard weiterleiten.
+    if ($result['success']) {
+        // In echten Apps hier gegen Datenbank prüfen; fürs Beispiel speichern wir nur die Eingaben.
+        $_SESSION['user'] = [
+            'email'    => $result['data']['email'],
+            'fullname' => 'PortfolioBuddy User',
+        ];
+        header('Location: /dashboard.php');
+        exit;
+    }
 }
 
 
 // Escape once at the point of output to centralize XSS protection and avoid double-escaping elsewhere.
 $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
 $errors = $result['errors'];
-$success = !empty($result['success']);
+$success = !empty($result['success']);  // true if login was successful, false otherwise. Prüfe mit empty() ob leer oder false ist 
 
 ?>
 

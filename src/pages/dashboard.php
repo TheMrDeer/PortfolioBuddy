@@ -1,9 +1,17 @@
 <?php
 session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: /login.php');
+    exit();
+}
+else {
+    // User is logged in, proceed to show the dashboard content here
+    $displayName = htmlspecialchars($_SESSION['user']['fullname'], ENT_QUOTES, 'UTF-8');  
+    echo "<title>Dashboard - " . $displayName . "</title>";
+    echo "Welcome to your dashboard, " . htmlspecialchars($_SESSION['user']['fullname'], ENT_QUOTES, 'UTF-8') . "!";  
+}
+
 ?>
-
-
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -52,13 +60,18 @@ session_start();
         <li class="nav-item">
           <a class="nav-link" href="/positions.php">Positions</a>
         </li>
+        <li>
+          <a class="nav-link" href="/upload.php">Upload Data</a>
+        </li> 
+  
       </ul>
+      
 
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="" alt="Avatar" class="rounded-circle me-2" widt="28" height="28">
-             <span><?= htmlspecialchars($_SESSION['user']['fullname'],ENT_QUOTES,'UTF-8') ?></span>
+            <span><?php echo $displayName; ?></span>
                 </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
               <li><a class="dropdown-item" href="/profile.php">Profile</a></li>

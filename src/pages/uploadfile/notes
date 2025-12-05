@@ -1,0 +1,57 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    var_dump($_FILES);
+
+    echo "<br />";
+    echo "<br />";
+
+    echo print_r($_FILES);
+
+    /* mypictures/cats/kitten/cat.jpg
+    // basename --> cat.jpg
+    // targetFileName -> uploads/cat.jpg
+
+    // C:/xampp/htdocs/webws25 --> .. C:/xampp/htdocs -> .. C:/xampp
+    // ../../../../etc/passwd
+    // basename(../../../../etc/passwd) --> passwd */
+
+    $targetFileName = "uploads/" . basename($_FILES["uploadBild"]["name"]);
+
+    move_uploaded_file($_FILES["uploadBild"]["tmp_name"], $targetFileName);
+
+    // Ordner erstellen
+    mkdir("uploads");
+
+    // Datei löschen
+    unlink("uploads/filetodelete.jpg");
+
+    // Moving files, can be dangerous, as it will overwrite the existing file
+    rename("frompath", "topath");
+
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File-Upload</title>
+</head>
+<body>
+    <h2>Datei Upload</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="fileupload">Datei hochladen</label>
+        <input type="file" id="fileupload" name="uploadBild" />
+        <br />
+        <label for="newname">Neuer Name</label>
+        <input type="text" id="newname" name="newname" />
+        <br />
+        <button type="submit">Abschicken</button>
+    </form>
+    <img src="<?php echo $targetFileName;  ?>" />
+    <img src="<?= $targetFileName  ?>" />
+</body>
+</html>
