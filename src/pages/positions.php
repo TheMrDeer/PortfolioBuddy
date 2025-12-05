@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-// 1. Alle notwendigen Dateien einbinden
+// Alle notwendigen Dateien einbinden
 require_once __DIR__ . '/includes/dbaccess.php';          
 require_once __DIR__ . '/util/utils.php';                 
 require_once __DIR__ . '/util/positions_functions.php';   
+require_once __DIR__ . '/util/stock_data_functions.php'; // NEU: API Funktionen
 
 // Login-Check
 if (!isset($_SESSION['user'])) {
@@ -12,7 +13,6 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-// Verbindung für die gesamte Seite öffnen
 $db_obj = new mysqli($host, $user, $pass, $db);
 if ($db_obj->connect_error) {
     die("Verbindungsfehler: " . $db_obj->connect_error);
@@ -21,108 +21,111 @@ if ($db_obj->connect_error) {
 $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
 $userId = $_SESSION['user']['id'];
 
-// Initialisierung der Variablen (leer für "Neu erstellen")
 $errors = [];
 $successMessage = '';
 
-$currentAssetId = ''; // ID der Aktie, die gerade bearbeitet wird (leer = neu)
+// Init Variablen
+$currentAssetId = ''; 
 $name = '';
 $isin = '';
+$ticker = ''; // NEU
 $qty  = '';
 $price = '';
 $date = '';
-$isEditMode = false; // Steuert Text auf dem Button (Speichern vs Aktualisieren)
+$isEditMode = false;
 
-// --- A. LÖSCHEN (DELETE) ---
+// --- A. LÖSCHEN ---
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $delSql = "DELETE FROM `assets` WHERE `id` = ? AND `user_id` = ?";
     $delStmt = $db_obj->prepare($delSql);
     $delId = (int)$_GET['id'];
-    
     $delStmt->bind_param("ii", $delId, $userId);
-    
     if ($delStmt->execute()) {
-        $successMessage = "Position erfolgreich gelöscht.";
+        $successMessage = "Position gelöscht.";
     } else {
-        $errors[] = "Fehler beim Löschen: " . $delStmt->error;
+        $errors[] = "Fehler: " . $delStmt->error;
     }
     $delStmt->close();
 }
 
-// --- B. FORMULAR ABSENDEN (INSERT ODER UPDATE) ---
+// --- B. SPEICHERN (INSERT/UPDATE) ---
 if ($isPost) {
     $result = validate_asset_input($_POST, $_FILES);
-    
-    // ID aus dem versteckten Feld holen (leer = neu, Zahl = update)
     $currentAssetId = $_POST['asset_id'] ?? ''; 
 
-    // Bei Fehler: Eingaben behalten, damit User nicht neu tippen muss
+    // Daten aus Validierung übernehmen
     $name  = $result['data']['name'] ?? '';
     $isin  = $result['data']['isin'] ?? '';
+    $ticker = $result['data']['ticker'] ?? ''; // NEU
     $date  = $result['data']['date'] ?? '';
-    $qty   = htmlspecialchars($_POST['quantity'] ?? '', ENT_QUOTES, 'UTF-8');
-    $price = htmlspecialchars($_POST['purchase_price'] ?? '', ENT_QUOTES, 'UTF-8');
+    $qty   = $result['data']['quantity'] ?? '';
+    $price = $result['data']['price'] ?? '';
     
-    // Wenn ID vorhanden ist, sind wir im Edit-Modus (auch wenn Fehler passieren)
     if (!empty($currentAssetId)) {
         $isEditMode = true;
     }
 
     if ($result['success']) {
-        $valQty = $result['data']['quantity'];
-        $valPrice = $result['data']['price'];
+        
+        // 1. API-CHECK: Wenn Ticker leer ist, versuchen wir ihn via ISIN zu holen
+        if (empty($ticker) && !empty($isin)) {
+            // Funktion aus stock_data_functions.php
+            $apiData = get_data_from_isin($isin);
+            if ($apiData && isset($apiData['ticker'])) {
+                $ticker = $apiData['ticker'];
+                // Optional: Auch den Namen updaten, falls der User faul war?
+                // if (empty($name)) $name = $apiData['name'];
+            }
+        }
+
         $assetType = 'stock';
 
         if ($isEditMode) {
-            // --- UPDATE (Bestehende ändern) ---
-            $sql = "UPDATE `assets` SET `name`=?, `isin`=?, `quantity`=?, `purchase_price`=?, `purchase_date`=? WHERE `id`=? AND `user_id`=?";
+            // UPDATE mit Ticker
+            $sql = "UPDATE `assets` SET `name`=?, `isin`=?, `ticker`=?, `quantity`=?, `purchase_price`=?, `purchase_date`=? WHERE `id`=? AND `user_id`=?";
             $stmt = $db_obj->prepare($sql);
-            // Parameter: sddsii (string, string, double, double, string, int, int)
-            $stmt->bind_param("ssddsii", $name, $isin, $valQty, $valPrice, $date, $currentAssetId, $userId);
+            // Parameter: sssddsii (String, String, String, Double, Double, String, Int, Int)
+            $stmt->bind_param("sssddsii", $name, $isin, $ticker, $qty, $price, $date, $currentAssetId, $userId);
             
             if ($stmt->execute()) {
-                $successMessage = "Position erfolgreich aktualisiert!";
-                $targetAssetId = $currentAssetId; // Für Datei-Upload
-                // Nach Update Formular leeren (oder man könnte im Edit-Modus bleiben)
-                $name = $isin = $qty = $price = $date = $currentAssetId = ''; 
+                $successMessage = "Position aktualisiert! (Ticker: $ticker)";
+                $targetAssetId = $currentAssetId; 
+                // Reset Form
+                $name = $isin = $ticker = $qty = $price = $date = $currentAssetId = ''; 
                 $isEditMode = false;
             } else {
-                $errors[] = "Datenbankfehler beim Update: " . $stmt->error;
+                $errors[] = "DB Fehler: " . $stmt->error;
             }
         } else {
-            // --- INSERT (Neu erstellen) ---
-            $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`, `quantity`, `purchase_price`, `purchase_date`, `asset_type`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            // INSERT mit Ticker
+            $sql = "INSERT INTO `assets` (`user_id`, `name`, `isin`, `ticker`, `quantity`, `purchase_price`, `purchase_date`, `asset_type`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $db_obj->prepare($sql);
-            // Parameter: issddss
-            $stmt->bind_param("issddss", $userId, $name, $isin, $valQty, $valPrice, $date, $assetType);
+            // Parameter: isssddss
+            $stmt->bind_param("isssddss", $userId, $name, $isin, $ticker, $qty, $price, $date, $assetType);
             
             if ($stmt->execute()) {
-                $successMessage = "Position erfolgreich gespeichert!";
-                $targetAssetId = $db_obj->insert_id; // Neue ID für Upload
-                // Formular leeren
-                $name = $isin = $qty = $price = $date = ''; 
+                $successMessage = "Position gespeichert! (Ticker: $ticker)";
+                $targetAssetId = $db_obj->insert_id;
+                // Reset Form
+                $name = $isin = $ticker = $qty = $price = $date = ''; 
             } else {
-                $errors[] = "Datenbankfehler beim Speichern: " . $stmt->error;
+                $errors[] = "DB Fehler: " . $stmt->error;
             }
         }
 
-        // --- DATEI UPLOAD (Gemeinsam für Update & Insert) ---
+        // DATEI UPLOAD (Code bleibt gleich, nur asset_attachment Pfad nutzen)
         if (isset($stmt) && empty($errors) && isset($_FILES['asset_file']) && $_FILES['asset_file']['error'] === UPLOAD_ERR_OK) {
             $targetDir = __DIR__ . "/user_uploads/" . $userId . "/asset_attachment/" . $targetAssetId;
             if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
-            
             $fileName = basename($_FILES["asset_file"]["name"]);
-            $targetFilePath = $targetDir . "/" . $fileName;
-            move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetFilePath);
+            move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetDir . "/" . $fileName);
         }
-        
         if (isset($stmt)) $stmt->close();
     } else {
         $errors = $result['errors'];
     }
 } 
-// --- C. BEARBEITEN VORBEREITEN (GET) ---
-// Wenn kein POST, aber action=edit, dann Daten aus DB laden
+// --- C. BEARBEITEN LADEN ---
 elseif (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
     $editId = (int)$_GET['id'];
     $sql = "SELECT * FROM `assets` WHERE `id` = ? AND `user_id` = ?";
@@ -135,17 +138,17 @@ elseif (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'
     if ($asset) {
         $isEditMode = true;
         $currentAssetId = $asset['id'];
-        $name = $asset['name'];
-        $isin = $asset['isin'];
-        // Wichtig: float values für das Input-Feld formatieren (oder raw lassen)
-        $qty  = $asset['quantity']; 
-        $price = $asset['purchase_price'];
-        $date = $asset['purchase_date'];
+        $name   = $asset['name'];
+        $isin   = $asset['isin'];
+        $ticker = $asset['ticker']; // NEU
+        $qty    = $asset['quantity']; 
+        $price  = $asset['purchase_price'];
+        $date   = $asset['purchase_date'];
     }
     $stmt->close();
 }
 
-// --- D. LISTE LADEN (IMMER) ---
+// LISTE LADEN
 $myAssets = [];
 $listSql = "SELECT * FROM `assets` WHERE `user_id` = ? ORDER BY `purchase_date` DESC";
 $listStmt = $db_obj->prepare($listSql);
@@ -158,6 +161,7 @@ while ($row = $listResult->fetch_assoc()) {
 $listStmt->close();
 $db_obj->close(); 
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -202,6 +206,11 @@ $db_obj->close();
                         <div class="mb-3">
                             <label for="assetISIN" class="form-label">ISIN</label>
                             <input type="text" class="form-control" id="assetISIN" name="asset_ISIN" value="<?= htmlspecialchars($isin) ?>" placeholder="US0378331005" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assetTicker" class="form-label">Ticker Symbol (Optional)</label>
+                            <input type="text" class="form-control" id="assetTicker" name="asset_ticker" value="<?= htmlspecialchars($ticker) ?>" placeholder="AAPL (wird automatisch gesucht, wenn leer)">
+                            <div class="form-text">Lassen Sie dieses Feld leer, um den Ticker automatisch anhand der ISIN zu ermitteln.</div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -253,7 +262,7 @@ $db_obj->close();
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th scope="col">Aktienname</th>
+                                    <th scope="col">Aktie / Symbol</th>
                                     <th scope="col" class="text-end">Anzahl</th>
                                     <th scope="col" class="text-end">Kaufpreis</th>
                                     <th scope="col" class="text-center">Kaufdatum</th>
@@ -270,7 +279,14 @@ $db_obj->close();
                                         <tr>
                                             <td>
                                                 <strong><?= htmlspecialchars($asset['name']) ?></strong><br>
-                                                <small class="text-muted"><?= htmlspecialchars($asset['isin']) ?></small>
+                                                
+                                                <small class="text-muted">
+                                                    <?= htmlspecialchars($asset['isin']) ?>
+                                                    
+                                                    <?php if (!empty($asset['ticker'])): ?>
+                                                        &bull; <span class="badge bg-secondary"><?= htmlspecialchars($asset['ticker']) ?></span>
+                                                    <?php endif; ?>
+                                                </small>
                                             </td>
                                             <td class="text-end"><?= number_format($asset['quantity'], 2, ',', '.') ?></td>
                                             <td class="text-end">€<?= number_format($asset['purchase_price'], 2, ',', '.') ?></td>
@@ -278,14 +294,14 @@ $db_obj->close();
                                             <td class="text-end">€<?= number_format($total, 2, ',', '.') ?></td>
                                             <td class="text-center">
                                                 <a href="/positions.php?action=edit&id=<?= $asset['id'] ?>" 
-                                                   class="btn btn-sm btn-outline-primary">
-                                                   Bearbeiten
+                                                class="btn btn-sm btn-outline-primary">
+                                                Bearbeiten
                                                 </a>
                                                 
                                                 <a href="/positions.php?action=delete&id=<?= $asset['id'] ?>" 
-                                                   class="btn btn-sm btn-outline-danger"
-                                                   onclick="return confirm('Möchten Sie diese Position wirklich löschen?');">
-                                                   Löschen
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Möchten Sie diese Position wirklich löschen?');">
+                                                Löschen
                                                 </a>
                                             </td>
                                         </tr>
