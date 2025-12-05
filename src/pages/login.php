@@ -6,8 +6,8 @@ require_once __DIR__ . '/util/utils.php';
 
 // Wenn User schon eingeloggt, weg hier
 if (isset($_SESSION['user'])) {
-    header('Location: /PortfolioBuddy/dashboard.php');
-    exit;
+        header('Location: /dashboard.php');
+        exit;
 }
 
 $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
@@ -59,7 +59,7 @@ if ($isPost) {
                     ];
 
                     // Redirect
-                    header('Location: /PortfolioBuddy/dashboard.php');
+                    header('Location: /dashboard.php');
                     exit;
 
                 } else {
@@ -141,7 +141,7 @@ $errors = $result['errors'];
          </form>
 
          <p class="text-center text-secondary mt-3 mb-0">
-          Noch kein Konto? <a href="/PortfolioBuddy/register.php">Registrieren</a>
+          Noch kein Konto? <a href="/register.php">Registrieren</a>
          </p>
        </div>
      </div>

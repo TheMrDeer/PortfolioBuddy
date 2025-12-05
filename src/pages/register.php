@@ -6,7 +6,7 @@ require_once __DIR__ . '/util/utils.php';
 
 // Wenn User schon eingeloggt, weg hier
 if (isset($_SESSION['user'])) {
-    header('Location: /PortfolioBuddy/dashboard.php');
+    header('Location: /dashboard.php');
     exit;
 }
 
@@ -85,7 +85,7 @@ if ($isPostRequest) {
             ];
 
             // Redirect
-            header('Location: /PortfolioBuddy/dashboard.php');
+            header('Location: /dashboard.php');
             exit;
 
         } else {
@@ -166,7 +166,7 @@ if ($isPostRequest) {
         
 
  <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
-  <form id="registerForm" action="/PortfolioBuddy/register.php" method="post">
+  <form id="registerForm" action="/register.php" method="post">
   <!-- Full Name -->
   <div class="mb-3">
     <label for="fullname" class="form-label">Name</label>
@@ -260,7 +260,7 @@ if ($isPostRequest) {
 
         </main>
         <!-- Alles was außerhalb von main ist, gehört rein Logischer Struktur nicht zur register.html seite, also eher dann zur login seite-->
-        <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/PortfolioBuddy/login.php">Sign in</a></p>
+        <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/login.php">Sign in</a></p>
       </div>
     </div>
   </div>

@@ -8,7 +8,7 @@ require_once __DIR__ . '/util/positions_functions.php';
 
 // Login-Check
 if (!isset($_SESSION['user'])) {
-    header('Location: /PortfolioBuddy/login.php');
+    header('Location: /login.php');
     exit;
 }
 
@@ -192,7 +192,7 @@ $db_obj->close();
                         </div>
                     <?php endif; ?>
 
-                    <form method="post" action="/PortfolioBuddy/positions.php" enctype="multipart/form-data">
+                    <form method="post" action="/positions.php" enctype="multipart/form-data">
                         <input type="hidden" name="asset_id" value="<?= htmlspecialchars($currentAssetId) ?>">
                         
                         <div class="mb-3">
@@ -226,7 +226,7 @@ $db_obj->close();
                         </div>
                         <div class="d-flex justify-content-between">
                             <?php if ($isEditMode): ?>
-                                <a href="/PortfolioBuddy/positions.php" class="btn btn-secondary">Abbrechen</a>
+                                <a href="/positions.php" class="btn btn-secondary">Abbrechen</a>
                             <?php else: ?>
                                 <div></div> <?php endif; ?>
                             
@@ -277,12 +277,12 @@ $db_obj->close();
                                             <td class="text-center"><?= htmlspecialchars($asset['purchase_date']) ?></td>
                                             <td class="text-end">€<?= number_format($total, 2, ',', '.') ?></td>
                                             <td class="text-center">
-                                                <a href="/PortfolioBuddy/positions.php?action=edit&id=<?= $asset['id'] ?>" 
+                                                <a href="/positions.php?action=edit&id=<?= $asset['id'] ?>" 
                                                    class="btn btn-sm btn-outline-primary">
                                                    Bearbeiten
                                                 </a>
                                                 
-                                                <a href="/PortfolioBuddy/positions.php?action=delete&id=<?= $asset['id'] ?>" 
+                                                <a href="/positions.php?action=delete&id=<?= $asset['id'] ?>" 
                                                    class="btn btn-sm btn-outline-danger"
                                                    onclick="return confirm('Möchten Sie diese Position wirklich löschen?');">
                                                    Löschen

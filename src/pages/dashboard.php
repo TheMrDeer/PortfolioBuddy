@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/dbaccess.php'; // $host, $user, $pass, $db
 
 // Login Check
 if (!isset($_SESSION['user'])) {
-    header('Location: /PortfolioBuddy/login.php');
+    header('Location: /login.php');
     exit;
 }
 
@@ -41,6 +41,7 @@ $db_obj->close();
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <?php include __DIR__ .'/includes/_navbar.php'; ?>
@@ -55,6 +56,11 @@ $db_obj->close();
                 <div class="card shadow-sm">
                     <div class="card-header">
                         <h2 class="h4 mb-0">Meine Positionen</h2>
+                        
+                            <div>
+                                <canvas id="positionsChart" width="400" height="200"></canvas>
+                                </div>
+
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -86,7 +92,7 @@ $db_obj->close();
                                                 <td class="text-center"><?= htmlspecialchars($asset['purchase_date']) ?></td>
                                                 <td class="text-end">€<?= number_format($totalValue, 2, ',', '.') ?></td>
                                                 <td class="text-center">
-                                                    <a href="/PortfolioBuddy/positions.php" class="btn btn-sm btn-outline-primary">Verwalten</a>
+                                                    <a href="/positions.php" class="btn btn-sm btn-outline-primary">Verwalten</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -94,7 +100,7 @@ $db_obj->close();
                                         <tr>
                                             <td colspan="6" class="text-center text-muted py-4">
                                                 Noch keine Positionen vorhanden. <br>
-                                                <a href="/PortfolioBuddy/positions.php">Erste Aktie hinzufügen</a>
+                                                <a href="/positions.php">Erste Aktie hinzufügen</a>
                                             </td>
                                         </tr>
                                     <?php endif; ?>
@@ -108,6 +114,27 @@ $db_obj->close();
     </div>
 
   </div>
+
+<script>
+  // 1) Deine Daten
+  const data = {
+    labels: ['Red', 'Blue', 'Yellow'],
+    datasets: [{
+      label: 'My First Dataset',
+      data: [300, 50, 100],
+      backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56'],
+    }]
+  };
+
+  // 2) Chart-Typ + Daten zusammenstecken
+  const config = {
+    type: 'doughnut', // z.B. doughnut, bar, line
+    data: data
+  };
+
+  // 3) Chart zeichnen
+  new Chart(document.getElementById('positionsChart'), config);
+</script>
 
 </body>
 </html>
