@@ -18,6 +18,8 @@ if ($db_obj->connect_error) {
 $userId = $_SESSION['user']['id'];
 $assets = [];
 
+
+
 // SQL: Wähle alle Assets für diesen User, sortiert nach Kaufdatum (neueste zuerst)
 $sql = "SELECT * FROM `assets` WHERE `user_id` = ? ORDER BY `purchase_date` DESC";
 $stmt = $db_obj->prepare($sql);
@@ -28,6 +30,13 @@ $result = $stmt->get_result();
 // Alle Zeilen als assoziatives Array holen
 while ($row = $result->fetch_assoc()) {
     $assets[] = $row;
+}
+
+$labels = []; // Für Chart.js
+$values = []; 
+foreach ($assets as $asset) {
+    $labels[] = $asset['name'];
+    $values[] = $asset['quantity'] * $asset['purchase_price']; // Gesamtwert
 }
 
 $stmt->close();
@@ -58,6 +67,8 @@ $db_obj->close();
                         <h2 class="h4 mb-0">Meine Positionen</h2>
                         
                             <div>
+                            
+
                                 <canvas id="positionsChart" width="350" height="250"></canvas>
                                 </div>
 
@@ -117,12 +128,16 @@ $db_obj->close();
 
 <script>
   // 1) Deine Daten
+
+const labels = <?php echo json_encode($labels)?>; //
+const values = <?php echo json_encode($values)?>;
+
   const data = {
-    labels: ['Red', 'Blue', 'Yellow'],
+    labels: labels,
     datasets: [{
-      label: 'My First Dataset',
-      data: [300, 50, 100],
-      backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56'],
+      label: 'Portfolio Distribution (€)',
+      data: values,
+      backgroundColor: ['#ff6384','#36a2eb','#ffcd56','#4bc0c0','#9966ff','#ff9f40'],
     }]
   };
 
