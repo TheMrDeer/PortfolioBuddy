@@ -58,7 +58,7 @@ $db_obj->close();
                         <h2 class="h4 mb-0">Meine Positionen</h2>
                         
                             <div>
-                                <canvas id="positionsChart" width="400" height="200"></canvas>
+                                <canvas id="positionsChart" width="350" height="250"></canvas>
                                 </div>
 
                     </div>
@@ -129,7 +129,12 @@ $db_obj->close();
   // 2) Chart-Typ + Daten zusammenstecken
   const config = {
     type: 'doughnut', // z.B. doughnut, bar, line
-    data: data
+    data: data,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+    }
+
   };
 
   // 3) Chart zeichnen
