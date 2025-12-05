@@ -5,7 +5,7 @@ require_once __DIR__ . '/util/profile_functions.php';
 require_once __DIR__ . '/util/utils.php';
 // If user is not logged in, redirect to login page.
 if (!isset($_SESSION['user'])) {
-    header('Location: /PortfolioBuddy/login.php');
+    header('Location: /login.php');
     exit;
 }
 
@@ -31,7 +31,7 @@ if ($isPost) {
         $_SESSION['user']['email'] = $result['data']['email'];
 
         // Redirect to the profile page in view mode to show the changes
-        header('Location: /PortfolioBuddy/profile.php?success=1');
+        header('Location: /profile.php?success=1');
         exit;
     } else {
         // If validation fails, stay in edit mode to show errors.
@@ -79,7 +79,7 @@ $errors = $result['errors'];
                         </div>
                     <?php endif; ?>
 
-                    <form method="post" enctype="multipart/form-data" action="/PortfolioBuddy/profile.php">
+                    <form method="post" enctype="multipart/form-data" action="/profile.php">
                         <!-- Full Name -->
                         <div class="mb-3">
                             <label for="fullname" class="form-label">Full Name</label>
@@ -120,10 +120,10 @@ $errors = $result['errors'];
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <?php if ($isEditMode): ?>
-                                <a href="/PortfolioBuddy/profile.php" class="btn btn-secondary">Cancel</a>
+                                <a href="/profile.php" class="btn btn-secondary">Cancel</a>
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                             <?php else: ?>
-                                <a href="/PortfolioBuddy/profile.php?action=edit" class="btn btn-primary">Edit Profile</a>
+                                <a href="/profile.php?action=edit" class="btn btn-primary">Edit Profile</a>
                             <?php endif; ?>
                         </div>
                     </form>

@@ -1,41 +1,88 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/dbaccess.php'; // $host, $user, $pass, $db
 require_once __DIR__ . '/util/login_functions.php';
 require_once __DIR__ . '/util/utils.php';
 
-// If the user is already logged in, redirect them to the dashboard.
+// Wenn User schon eingeloggt, weg hier
 if (isset($_SESSION['user'])) {
-    header('Location: /PortfolioBuddy/dashboard.php');
-    exit;
+        header('Location: /dashboard.php');
+        exit;
 }
 
-$isPost = $_SERVER['REQUEST_METHOD'] === 'POST';  //verify ob es ein POST request ist
-
-// Start with a predictable shape so template logic can assume these keys exist.
-$result = ['success' => false, 'errors' => [], 'data' => []]; //
+$isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
+$result = ['success' => false, 'errors' => [], 'data' => []];
  
 if ($isPost) {
+    // 1. Basis-Validierung (Format E-Mail etc.)
     $result = validate_login_input($_POST);
 
     if ($result['success']) {
-        // In a real application, you would fetch the user from the database here.
-        // For now, we'll create a placeholder user session.
-        $_SESSION['user'] = [
-            'id'       => 1, // Placeholder ID
-            'fullname' => 'Logged-in User', // Placeholder name
-            'email'    => $result['data']['email'],
-        ];
+        
+        // Datenbankverbindung aufbauen (wie in register.php)
+        $db_obj = new mysqli($host, $user, $pass, $db);
 
-        header('Location: /PortfolioBuddy/dashboard.php');
-        exit;
+        if ($db_obj->connect_error) {
+            $result['errors'][] = "Verbindungsfehler: " . $db_obj->connect_error;
+            $result['success'] = false;
+        } else {
+            
+            // Eingaben vorbereiten
+            $emailRaw = $result['data']['email'];
+            $passwordInput = get_field($_POST, 'password');
+
+            // 2. SQL Statement: User suchen (PDF Folie 17)
+            // Wir holen id, name, passwort_hash und rolle
+            $sql = "SELECT id, fullname, email, password_hash, role FROM users WHERE email = ?";
+            $stmt = $db_obj->prepare($sql);
+
+            // Parameter binden
+            $stmt->bind_param("s", $emailRaw);
+            $stmt->execute();
+
+            // 3. Ergebnis an Variablen binden (PDF Folie 17)
+            // Die Reihenfolge muss exakt dem SELECT entsprechen!
+            $stmt->bind_result($uid, $uname, $uemail, $upassHash, $urole);
+
+            // 4. Daten abholen (PDF Folie 18)
+            if ($stmt->fetch()) {
+                // Benutzer gefunden - Jetzt Passwort prüfen (PDF Folie 20)
+                if (password_verify($passwordInput, $upassHash)) {
+                    // Login erfolgreich!
+                    
+                    // Session setzen
+                    $_SESSION['user'] = [
+                        'id'       => $uid,
+                        'fullname' => $uname,
+                        'email'    => $uemail,
+                        'role'     => $urole
+                    ];
+
+                    // Redirect
+                    header('Location: /dashboard.php');
+                    exit;
+
+                } else {
+                    // Passwort falsch
+                    $result['success'] = false;
+                    $result['errors'][] = "Ungültige E-Mail-Adresse oder Passwort.";
+                }
+            } else {
+                // Keine E-Mail gefunden
+                $result['success'] = false;
+                $result['errors'][] = "Ungültige E-Mail-Adresse oder Passwort.";
+            }
+
+            // Aufräumen
+            $stmt->close();
+            $db_obj->close();
+        }
     }
 }
 
-
-// Escape once at the point of output to centralize XSS protection and avoid double-escaping elsewhere.
+// Variablen für die View
 $prefillEmail = htmlspecialchars($result['data']['email'] ?? '', ENT_QUOTES, 'UTF-8');
 $errors = $result['errors'];
-$success = !empty($result['success']);
 
 ?>
 
@@ -94,7 +141,7 @@ $success = !empty($result['success']);
          </form>
 
          <p class="text-center text-secondary mt-3 mb-0">
-          Noch kein Konto? <a href="/PortfolioBuddy/register.php">Registrieren</a>
+          Noch kein Konto? <a href="/register.php">Registrieren</a>
          </p>
        </div>
      </div>
