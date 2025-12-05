@@ -17,7 +17,7 @@ if ($isPost) {
   $targetFileName= "user_uploads/".$_SESSION['user']['id']."/"."asset_attachment/".$_POST['asset_ISIN']."/".basename($_FILES["asset_file"]["name"]);
   move_uploaded_file($_FILES["asset_file"]["tmp_name"], $targetFileName);
 
-$result = validate_positions_input($_POST);
+$result = validate_assets_input($_POST);
 $errors = $result['errors'];
 
    
