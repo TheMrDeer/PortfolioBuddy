@@ -13,11 +13,14 @@ $avatarDirFs = $projectRoot . '/user_uploads/' . $_SESSION['user']['id'] . '/pro
 $files = glob($avatarDirFs . '/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
 
 if ($files && count($files) > 0) {
-    // Ersten Treffer nehmen
+    // Neueste Datei nehmen (sortiert nach Änderungszeit)
+    usort($files, function ($a, $b) {
+        return filemtime($b) <=> filemtime($a);
+    });
     $FileName = basename($files[0]);
 
     // URL fürs <img>-Tag bauen (nicht Filesystem-Pfad!)
-    $avatarUrl = '/user_uploads/' . $_SESSION['user']['id'] . "/profilepicture"."/" . $FileName;
+    $avatarUrl = '/user_uploads/' . $_SESSION['user']['id'] . "/profilepicture" . "/" . $FileName;
 }
 
 ?>
