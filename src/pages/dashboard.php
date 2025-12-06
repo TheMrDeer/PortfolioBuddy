@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/util/stock_data_functions.php';
 require_once __DIR__ . '/includes/dbaccess.php'; // $host, $user, $pass, $db
 
 // Login Check
@@ -30,6 +31,23 @@ $result = $stmt->get_result();
 // Alle Zeilen als assoziatives Array holen
 while ($row = $result->fetch_assoc()) {
     $assets[] = $row;
+}
+
+foreach ($assets as &$asset) {
+    // Aktuellen Preis holen
+    $priceData = get_current_price_data($asset['ticker']);
+    
+    if ($priceData !== null) {
+        $asset['current_price'] = $priceData['regularMarketPrice'];
+        $asset['price_currency'] = $priceData['currency'];
+        $asset['name'] = $priceData['name'];
+    } else {                
+        $asset['current_price'] = 0.0;
+        $asset['price_currency'] = 'USD';
+        $asset['name'] = $asset['ticker']; // Fallback auf Ticker
+    }
+
+
 }
 
 $labels = []; // Für Chart.js
@@ -64,14 +82,14 @@ $db_obj->close();
             <div class="col-12 col-md-10 col-lg-8">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h2 class="h4 mb-0">Meine Positionen</h2>
-                        
+                         <h2 class="h4 mb-0">Performance und Metriken</h2> 
                             <div>
-                            
-
                                 <canvas id="positionsChart" width="350" height="250"></canvas>
                                 </div>
-
+                    <div class="card-body">
+                        <h1 class="h5">Metriken</h1>
+                        <?php include __DIR__ . '/util/dashboardMetrics_functions.php';?>
+                        <p class="mb-1">Gesamtwert deiner Investitionen: <strong>€<?= number_format(getCombinedValue($assets), 2, ',', '.') ?></strong></p>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -80,9 +98,9 @@ $db_obj->close();
                                     <tr>
                                         <th scope="col">Aktienname</th>
                                         <th scope="col" class="text-end">Anzahl</th>
-                                        <th scope="col" class="text-end">Kaufpreis</th>
+                                        <th scope="col" class="text-end">Preis/Stück</th>
                                         <th scope="col" class="text-center">Kaufdatum</th>
-                                        <th scope="col" class="text-end">Gesamtwert</th>
+                                        <th scope="col" class="text-center">&sum; Wert</th>
                                         <th scope="col" class="text-center">Aktionen</th>
                                     </tr>
                                 </thead>
@@ -102,6 +120,7 @@ $db_obj->close();
                                                 <td class="text-end">€<?= number_format($asset['purchase_price'], 2, ',', '.') ?></td>
                                                 <td class="text-center"><?= htmlspecialchars($asset['purchase_date']) ?></td>
                                                 <td class="text-end">€<?= number_format($totalValue, 2, ',', '.') ?></td>
+                                                
                                                 <td class="text-center">
                                                     <a href="/positions.php" class="btn btn-sm btn-outline-primary">Verwalten</a>
                                                 </td>

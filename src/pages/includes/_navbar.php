@@ -1,7 +1,7 @@
 <?php
 $currentPage = basename($_SERVER['SCRIPT_NAME']);
 
-$avatarUrl = 'https://i.pravatar.cc/28?u=' . urlencode($_SESSION['user']['email'] ?? 'guest');
+$avatarUrl = 'https://i.pravatar.cc/28?u=' . urlencode($_SESSION['user']['email'] ?? 'guest'); // Standard-Avatar
 
 // Projektroot (eine Ebene über /includes)
 $projectRoot = dirname(__DIR__);
