@@ -41,6 +41,11 @@ if ($files && count($files) > 0) {
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'positions.php') ? 'active' : '' ?>" href="/positions.php">Positions</a>
                 </li>
+                <?php if (!empty($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
+                <li class="nav-item">
+                <a class="nav-link <?= ($currentPage === 'adminpanel.php') ? 'active' : '' ?>" href="/adminpanel.php">Adminpanel</a>
+                     </li>
+                    <?php endif; ?>
             </ul>
 
             <ul class="navbar-nav ms-auto">
