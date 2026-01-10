@@ -74,11 +74,11 @@ function validate_asset_input(array $post, array $files = []): array
             if ($file['size'] > 5 * 1024 * 1024) {
                 $errors[] = 'Datei ist zu groß (Max 5MB).';
             }
-            $allowedMimes = ['image/jpeg', 'image/jpg', 'application/pdf'];
+            $allowedMimes = ['image/jpeg', 'image/jpg','image/png', 'application/pdf'];
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $mimeType = $finfo->file($file['tmp_name']);
             if (!in_array($mimeType, $allowedMimes)) {
-                $errors[] = 'Nur JPG und PDF erlaubt.';
+                $errors[] = 'Nur JPG, PNG und PDF erlaubt.';
             }
         }
     }

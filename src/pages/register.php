@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/includes/dbaccess.php'; // Deine PDF-Variablen ($host, $user, etc.)
+require_once __DIR__ . '/includes/dbaccess.php'; 
 require_once __DIR__ . '/util/register_functions.php';
 require_once __DIR__ . '/util/utils.php';
 
@@ -12,7 +12,7 @@ if (isset($_SESSION['user'])) {
 
 $isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST'; 
 
-// 1. Variablen IMMER initialisieren (damit keine "Undefined variable" Warnung kommt)
+//  "Undefined variable" Warnung
 $prefillFullname = '';
 $prefillEmail    = '';
 $errors          = [];
@@ -32,8 +32,7 @@ if ($isPostRequest) {
 
     if ($result['success']) {
         
-        // 2. Datenbankverbindung (PDF Folie 5)
-        // Wir nutzen $host, $user, $pass, $db aus dbaccess.php
+        //dbaccess.php
         $db_obj = new mysqli($host, $user, $pass, $db);
 
         // Verbindung prüfen
@@ -42,23 +41,22 @@ if ($isPostRequest) {
             exit();
         }
 
-        // Passwort hashen (PDF Folie 23)
+        // Passwort hashen 
         $passwordHash = password_hash($_POST["password"], PASSWORD_DEFAULT);
         
-        // Variablen vorbereiten
+        
         $uname = $result['data']['fullname'];
         $mail  = $result['data']['email'];
         $pass  = $passwordHash;
 
-        // 3. SQL Statement vorbereiten (PDF Folie 13)
+        
         $sql = "INSERT INTO `users` (`fullname`, `email`, `password_hash`) VALUES (?, ?, ?)";
         $stmt = $db_obj->prepare($sql);
 
-        // 4. Parameter binden (PDF Folie 15)
-        // "sss" -> String, String, String
+        
         $stmt->bind_param("sss", $uname, $mail, $pass);
 
-        // 5. Ausführen (PDF Folie 16/23)
+        
         if ($stmt->execute()) {
             
             // ID für Ordner holen
@@ -89,19 +87,17 @@ if ($isPostRequest) {
             exit;
 
         } else {
-            // Fehler (z.B. E-Mail schon vergeben)
+            
             // Error Code 1062 ist "Duplicate entry"
             if ($db_obj->errno === 1062) {
                 $errors[] = "Diese E-Mail-Adresse wird bereits verwendet.";
             } else {
                 $errors[] = "Datenbankfehler: " . $stmt->error;
             }
-            // Auch im Fehlerfall Felder gefüllt lassen
-            $prefillFullname = htmlspecialchars($uname, ENT_QUOTES, 'UTF-8');
-            $prefillEmail    = htmlspecialchars($mail, ENT_QUOTES, 'UTF-8');
+           
         }
 
-        // Aufräumen (PDF Folie 23)
+        
         $stmt->close();
         $db_obj->close();
     }
@@ -114,7 +110,7 @@ if ($isPostRequest) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
               
-    <!-- Bootstrap CSS -->
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> 
       
    
@@ -126,23 +122,16 @@ if ($isPostRequest) {
  <!--bg-light macht einen Hellen Hintegrund-->
  <body class="bg-light">
     
-  <!-- Container mit Padding oben und unten (padding top,bottom mit spacingschritt 5 (48px) ) -->
-   <!-- Zusammen: Dein Block sitzt zentriert in einer maximal sinnvollen Breite und bekommt oben/unten großzügigen Abstand, damit das Formular auf allen Devices Luft zum Rand hat.-->
+ 
   <div class="container py-5">
-    <!-- Zentriert den Inhalt horizontal // wobei .row Bootstrap flex Klasse ist und alle "childs" zu flex container macht-->
     <div class="row justify-content-center">
-    <!-- Macht den Inhalt auf kleinen Screens 100% breit, auf mittleren Screens 8 von 12 Spalten (also ca. 66%), auf großen Screens 6 von 12 Spalten (also 50%) -->
-     <!--Handy (unter 768px) Nimmt 12 von 12 Spalten → volle Breite - Tablet (ab 768px)	Nimmt 8 von 12 Spalten → etwas schmaler. Laptop (ab 992px)	Nimmt 6 von 12 Spalten → halbe Breite-->
      <div class="col-12 col-md-8 col-lg-6">
-        <!-- Ab hier gehts eigentlich los alles darüber war ja nur mal containern und zentralisierung um sich auf bootstrap utils zu konzentrieren, flexbox lernen ist komplex-->
-         <!--Hauptkarte mit Schatten-->
         <main>
             
          <div class="card bg-info-subtle shadow-sm">
           
             <div class="card-body p-4 p-md-5"> 
             
-                <!-- Icon-->
             <div class="d-flex align-items-center gap-2 justify-content-center mb-2"> 
                 <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
@@ -160,12 +149,9 @@ if ($isPostRequest) {
                 <?php endforeach; ?>
                 </ul>
             </div>
-        <?php elseif ($isPostRequest && $success): ?>
-            <div class="alert alert-success" role="status">Registration successful (Debug)!</div>
-        <?php endif; ?>
+       
         
 
- <!--Formular mit ID und php Anbindung auf /register.php (backend post call)-->
   <form id="registerForm" action="/register.php" method="post">
   <!-- Full Name -->
   <div class="mb-3">
@@ -214,7 +200,7 @@ if ($isPostRequest) {
     />
   </div>
 
-  <!-- Confirm Password -->
+  
   <div class="mb-3">
     <label for="confirm" class="form-label">Confirm Password</label>
     <input
@@ -235,7 +221,7 @@ if ($isPostRequest) {
     </button>
   </div>
 
-  <!-- Divider -->
+ 
   <div>
     <div class="d-flex align-items-center my-2">
        <hr class="flex-grow-1">
@@ -259,8 +245,7 @@ if ($isPostRequest) {
            
 
         </main>
-        <!-- Alles was außerhalb von main ist, gehört rein Logischer Struktur nicht zur register.html seite, also eher dann zur login seite-->
-        <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/login.php">Sign in</a></p>
+                <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/login.php">Sign in</a></p>
       </div>
     </div>
   </div>

@@ -1,12 +1,6 @@
 <?php
-/**
- * Minimal, safe validators for the login form.
- * - Normalize POST values to strings (defends against arrays).
- * - Validate email + password.
- * - Do NOT html-escape here; escape only when rendering in HTML.
- */
 
-// «« @MrDeer: Gegenseitige Code-Review wenn du willst mit Kommis (der eine schreibt Code der andere reviewt und kommentiert etc) (englisch oder deutsch)»»
+
 
 function validate_login_input(array $post): array { // Validates login form input and returns result, wobei $array -> der POST array aus login.php ist(HTML form data)
     $errors = [];

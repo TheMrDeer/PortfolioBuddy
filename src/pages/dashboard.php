@@ -127,7 +127,7 @@ $db_obj->close();
   </div>
 
 <script>
-  // 1) Deine Daten
+  
 
 const labels = <?php echo json_encode($labels)?>; //
 const values = <?php echo json_encode($values)?>;
@@ -141,7 +141,7 @@ const values = <?php echo json_encode($values)?>;
     }]
   };
 
-  // 2) Chart-Typ + Daten zusammenstecken
+  
   const config = {
     type: 'doughnut', // z.B. doughnut, bar, line
     data: data,

@@ -1,7 +1,8 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/dbaccess.php';
 require_once __DIR__ . '/util/profile_functions.php';
-
+require_once __DIR__ . '/util/user_persistence_functions.php';
 require_once __DIR__ . '/util/utils.php';
 // If user is not logged in, redirect to login page.
 if (!isset($_SESSION['user'])) {
@@ -13,37 +14,53 @@ $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
 $isEditMode = isset($_GET['action']) && $_GET['action'] === 'edit';
 
 // Initialize with session data
-$user = $_SESSION['user'];
-$result = ['success' => false, 'errors' => [], 'data' => $user];
+$currentUser = $_SESSION['user'];
+$result = ['success' => false, 'errors' => [], 'data' => $currentUser];
+$errors = [];
 
 if ($isPost) {
     // Validate the submitted data
     $result = validate_profile_input($_POST);
-
-    // Profilbild speichern, falls eine Datei hochgeladen wurde
-    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-        $pathUploadRoot = __DIR__ . '/user_uploads';
-        $userFolder     = $pathUploadRoot . '/' . $user['id'] . '/profilepicture';
-        if (!is_dir($userFolder)) {
-            mkdir($userFolder, 0755, true);
-        }
-        $targetPath = $userFolder . '/' . basename($_FILES['profile_picture']['name']);
-        move_uploaded_file($_FILES['profile_picture']['tmp_name'], $targetPath);
-    }
+    $errors = $result['errors'];
 
     if ($result['success']) {
-        // On successful validation, update the session data.
-        // In a real application, you would update the database here.
-        $_SESSION['user']['fullname'] = $result['data']['fullname'];
-        $_SESSION['user']['email'] = $result['data']['email'];
+        $db_obj = new mysqli($host, $user, $pass, $db);
+        if ($db_obj->connect_error) {
+            $errors[] = "DB error: " . $db_obj->connect_error;
+        } else {
+            $saveResult = update_user_profile(
+                $db_obj,
+                (int)$currentUser['id'],
+                $result['data']['fullname'],
+                $result['data']['email']
+            );
 
-        // Redirect to the profile page in view mode to show the changes
-        header('Location: /profile.php?success=1');
-        exit;
-    } else {
-        // If validation fails, stay in edit mode to show errors.
-        $isEditMode = true;
+            if ($saveResult['success']) {
+                // Profilbild speichern, falls eine Datei hochgeladen wurde
+                if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+                    $pathUploadRoot = __DIR__ . '/user_uploads';
+                    $userFolder     = $pathUploadRoot . '/' . $currentUser['id'] . '/profilepicture';
+                    if (!is_dir($userFolder)) {
+                        mkdir($userFolder, 0755, true);
+                    }
+                    $targetPath = $userFolder . '/' . basename($_FILES['profile_picture']['name']);
+                    move_uploaded_file($_FILES['profile_picture']['tmp_name'], $targetPath);
+                }
+
+                $_SESSION['user']['fullname'] = $result['data']['fullname'];
+                $_SESSION['user']['email'] = $result['data']['email'];
+
+                $db_obj->close();
+                header('Location: /profile.php?success=1');
+                exit;
+            }
+
+            $errors[] = $saveResult['error'];
+            $db_obj->close();
+        }
     }
+
+    $result['errors'] = $errors;
 }
 
 // Prefill data for the form fields, escaping for security.
