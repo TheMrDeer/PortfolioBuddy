@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/includes/dbaccess.php'; // $host, $user, $pass, $db
+require_once __DIR__ . '/util/dashboard_metrics.php'; // getNetWorth()
 
 // Login Check
 if (!isset($_SESSION['user'])) {
@@ -18,8 +19,6 @@ if ($db_obj->connect_error) {
 $userId = $_SESSION['user']['id'];
 $assets = [];
 
-
-
 // SQL: Wähle alle Assets für diesen User, sortiert nach Kaufdatum (neueste zuerst)
 $sql = "SELECT * FROM `assets` WHERE `user_id` = ? ORDER BY `purchase_date` DESC";
 $stmt = $db_obj->prepare($sql);
@@ -31,6 +30,8 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $assets[] = $row;
 }
+
+$netWorth = getNetWorth($assets);
 
 $labels = []; // Für Chart.js
 $values = []; 
@@ -65,12 +66,10 @@ $db_obj->close();
                 <div class="card shadow-sm">
                     <div class="card-header">
                         <h2 class="h4 mb-0">Meine Positionen</h2>
-                        
+                            <div>Totaler Portfolio-Wert: €<?= number_format($netWorth, 2, ',', '.') ?></div>
                             <div>
-                            
-
                                 <canvas id="positionsChart" width="350" height="250"></canvas>
-                                </div>
+                            </div>
 
                     </div>
                     <div class="card-body">
