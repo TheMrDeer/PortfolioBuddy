@@ -110,141 +110,118 @@ if ($isPostRequest) {
 $pageTitle = 'Register - PortfolioBuddy';
 include __DIR__ . '/includes/_head.php';
 ?>
-
-<!-- BODY MIT BOOTSTRAP-KLASSEN FÜR RESPONSIVENESS UND STYLING -->
- <!--bg-light macht einen Hellen Hintegrund-->
- <body class="bg-light">
-    
- 
-  <div class="container py-5">
-    <div class="row justify-content-center">
-     <div class="col-12 col-md-8 col-lg-6">
-        <main>
-            
-         <div class="card bg-info-subtle shadow-sm">
-          
-            <div class="card-body p-4 p-md-5"> 
-            
-            <div class="d-flex align-items-center gap-2 justify-content-center mb-2"> 
-                <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+<body class="min-vh-100 d-flex align-items-center bg-light">
+  <div class="container">
+    <div class="card shadow mx-auto" style="max-width:480px">
+      <div class="card-body p-4 p-md-5"> 
+        <div class="d-flex align-items-center gap-2 justify-content-center mb-2"> 
+          <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-                </svg>
-            </div>
+          </svg>
+        </div>
 
-            <h1 class="h3 text-center mb-2">Register for PortfolioBuddy</h1>
-            <p class="lead text-center mb-4">Sign up and track your investing performance</p>
+        <h1 class="h4 text-center mb-2">Register for PortfolioBuddy</h1>
+        <p class="text-secondary text-center mb-4">Sign up and track your investing performance</p>
         <?php if ($isPostRequest && !empty($errors)): ?>
-            <div class="alert alert-danger" role="alert">
-                <ul class="mb-0">
-                <?php foreach ($errors as $err): ?>
-                    <li><?= htmlspecialchars(is_array($err) ? implode(', ', $err) : $err, ENT_QUOTES, 'UTF-8') ?></li>
-                <?php endforeach; ?>
-                </ul>
-            </div>
+          <div class="alert alert-danger" role="alert">
+            <ul class="mb-0 ps-3">
+            <?php foreach ($errors as $err): ?>
+                <li><?= htmlspecialchars(is_array($err) ? implode(', ', $err) : $err, ENT_QUOTES, 'UTF-8') ?></li>
+            <?php endforeach; ?>
+            </ul>
+          </div>
         <?php endif; ?>
-<<<<<<< HEAD
-=======
-        
->>>>>>> 29e1252 (Fix form rendering issue by closing conditional statement in register.php)
 
-  <form id="registerForm" action="/register.php" method="post">
-  <!-- Full Name -->
-  <div class="mb-3">
-    <label for="fullname" class="form-label">Name</label>
-    <input 
-      id="fullname"
-      name="fullname"
-      value="<?= $prefillFullname ?>"
-      type="text"
-      inputmode="text"
-      required
-      autocomplete="name"
-      class="form-control"
-      placeholder="Jane Doe"
-    />
-  </div>
+        <form id="registerForm" action="/register.php" method="post">
+          <div class="mb-3">
+            <label for="fullname" class="form-label">Name</label>
+            <input 
+              id="fullname"
+              name="fullname"
+              value="<?= $prefillFullname ?>"
+              type="text"
+              inputmode="text"
+              required
+              autocomplete="name"
+              class="form-control"
+              placeholder="Jane Doe"
+            />
+          </div>
 
-  <!-- Email -->
-  <div class="mb-3">
-    <label for="email" class="form-label">E-mail</label>
-    <input
-      id="email"
-      name="email"
-      value="<?= $prefillEmail ?>"  
-      type="email"
-      required
-      autocomplete="email"
-      class="form-control"
-      placeholder="example@com"
-    />
-  </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input
+              id="email"
+              name="email"
+              value="<?= $prefillEmail ?>"  
+              type="email"
+              required
+              autocomplete="email"
+              class="form-control"
+              placeholder="example@com"
+            />
+          </div>
 
-  <!-- Password -->
-  <div class="mb-3">
-    <label for="password" class="form-label">Password</label>
-    <small class="form-text text-muted">must include at least one special character and one number.</small>
-    <input
-      id="password"
-      name="password"
-      type="password"
-      required
-      minlength="8"
-      autocomplete="new-password"
-      class="form-control"
-      placeholder="At least 8 characters"
-    />
-  </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <small class="form-text text-muted">must include at least one special character and one number.</small>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              minlength="8"
+              autocomplete="new-password"
+              class="form-control"
+              placeholder="At least 8 characters"
+            />
+          </div>
 
-  
-  <div class="mb-3">
-    <label for="confirm" class="form-label">Confirm Password</label>
-    <input
-      id="confirm"
-      name="passwordRepeat"
-      type="password"
-      required
-      autocomplete="new-password"
-      class="form-control"
-      placeholder="Repeat your password"
-    />
-  </div>
+          <div class="mb-3">
+            <label for="confirm" class="form-label">Confirm Password</label>
+            <input
+              id="confirm"
+              name="passwordRepeat"
+              type="password"
+              required
+              autocomplete="new-password"
+              class="form-control"
+              placeholder="Repeat your password"
+            />
+          </div>
 
-  <!-- Submit Button -->
-  <div class="d-grid mt-4">
-    <button class="btn btn-primary" id="submitBtn" type="submit">
-      Create account
-    </button>
-  </div>
+          <div class="d-grid mt-4">
+            <button class="btn btn-primary" id="submitBtn" type="submit">
+              Create account
+            </button>
+          </div>
 
- 
-  <div>
-    <div class="d-flex align-items-center my-2">
-       <hr class="flex-grow-1">
-         <span class="px-2 text-muted text-uppercase">or</span>
-            <hr class="flex-grow-1">
-    </div>
-  </div>
+          <div>
+            <div class="d-flex align-items-center my-3">
+              <hr class="flex-grow-1">
+              <span class="px-2 text-muted text-uppercase">or</span>
+              <hr class="flex-grow-1">
+            </div>
+          </div>
 
-  <!-- OAuth / Google Sign Up -->
-  <div class="d-grid gap-2">
-    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-center">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-        alt="Google Logo"
-        style="width: 20px; height: 20px; margin-right: 8px"
-      />
-      Sign up with Google
-    </button>
-  </div>
-</form>
-           
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-outline-secondary d-flex align-items-center justify-content-center">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                alt="Google Logo"
+                style="width: 20px; height: 20px; margin-right: 8px"
+              />
+              Sign up with Google
+            </button>
+          </div>
+        </form>
 
-        </main>
-                <p class="text-center mt-3"> Already have an account? <a class="small-link" href="/login.php">Sign in</a></p>
+        <p class="text-center text-secondary mt-3 mb-0">
+          Already have an account? <a class="small-link" href="/login.php">Sign in</a>
+        </p>
       </div>
     </div>
   </div>
-
- </body>
-</html> 
+</body>
+</html>
