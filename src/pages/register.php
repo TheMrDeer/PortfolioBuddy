@@ -106,17 +106,10 @@ if ($isPostRequest) {
 
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-              
-   
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> 
-      
-   
-  
- <title>Register — PortfolioBuddy</title>
-</head>
+<?php
+$pageTitle = 'Register - PortfolioBuddy';
+include __DIR__ . '/includes/_head.php';
+?>
 
 <!-- BODY MIT BOOTSTRAP-KLASSEN FÜR RESPONSIVENESS UND STYLING -->
  <!--bg-light macht einen Hellen Hintegrund-->
@@ -149,8 +142,7 @@ if ($isPostRequest) {
                 <?php endforeach; ?>
                 </ul>
             </div>
-       
-        
+        <?php endif; ?>
 
   <form id="registerForm" action="/register.php" method="post">
   <!-- Full Name -->
