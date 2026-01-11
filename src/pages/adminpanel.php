@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/includes/dbaccess.php';
+require_once __DIR__ . '/util/user_persistence_functions.php';
 
 // Nur eingeloggte Admins dürfen hier rein
 if (!isset($_SESSION['user'])) {
@@ -21,8 +22,47 @@ if ($db->connect_error) {
     die('Verbindungsfehler: ' . $db->connect_error);
 }
 
+$alerts = [];
 $users = [];
 $stats = ['total' => 0, 'admins' => 0, 'users' => 0];
+
+// Admin-Aktionen verarbeiten
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action   = $_POST['action'] ?? '';
+    $targetId = (int)($_POST['user_id'] ?? 0);
+    $selfId   = (int)($_SESSION['user']['id'] ?? 0);
+
+    if ($targetId > 0) {
+        if ($targetId === $selfId && in_array($action, ['delete', 'set_role'], true)) {
+            $alerts[] = ['type' => 'danger', 'text' => 'Eigenes Konto kann hier nicht geändert/gelöscht werden.'];
+        } else {
+            if ($action === 'set_role') {
+                $role = $_POST['role'] ?? 'user';
+                $res = update_user_role($db, $targetId, $role);
+                $alerts[] = [
+                    'type' => $res['success'] ? 'success' : 'danger',
+                    'text' => $res['success'] ? 'Rolle aktualisiert.' : $res['error']
+                ];
+            } elseif ($action === 'reset_pw') {
+                $tempPass = 'Temp' . bin2hex(random_bytes(3)) . '!';
+                $hash = password_hash($tempPass, PASSWORD_DEFAULT);
+                $res = update_user_password($db, $targetId, $hash);
+                $alerts[] = [
+                    'type' => $res['success'] ? 'success' : 'danger',
+                    'text' => $res['success'] ? "Passwort zurückgesetzt. Neues Passwort: {$tempPass}" : $res['error']
+                ];
+            } elseif ($action === 'delete') {
+                $res = delete_user_account($db, $targetId);
+                $alerts[] = [
+                    'type' => $res['success'] ? 'success' : 'danger',
+                    'text' => $res['success'] ? 'Konto gelöscht.' : $res['error']
+                ];
+            }
+        }
+    }
+}
+
+$users = [];
 
 $stmt = $db->prepare("SELECT id, fullname, email, role, created_at FROM users ORDER BY created_at DESC");
 if ($stmt) {
@@ -65,6 +105,13 @@ include __DIR__ . '/includes/_head.php';
         </div>
     </div>
 
+    <?php foreach ($alerts as $alert): ?>
+        <div class="alert alert-<?= htmlspecialchars($alert['type'], ENT_QUOTES, 'UTF-8') ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($alert['text'], ENT_QUOTES, 'UTF-8') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endforeach; ?>
+
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
@@ -99,11 +146,25 @@ include __DIR__ . '/includes/_head.php';
                                     </td>
                                     <td><?= htmlspecialchars(date('Y-m-d', strtotime($userRow['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
                                     <td class="text-end">
-                                        <div class="btn-group btn-group-sm" role="group" aria-label="User actions">
-                                            <button type="button" class="btn btn-outline-secondary" disabled>View</button>
-                                            <button type="button" class="btn btn-outline-primary" disabled>Role</button>
-                                            <button type="button" class="btn btn-outline-warning" disabled>Reset PW</button>
-                                            <button type="button" class="btn btn-outline-danger" disabled>Deactivate</button>
+                                        <div class="d-flex justify-content-end gap-1 flex-wrap">
+                                            <form method="post" class="d-inline">
+                                                <input type="hidden" name="action" value="set_role">
+                                                <input type="hidden" name="user_id" value="<?= (int)$userRow['id'] ?>">
+                                                <input type="hidden" name="role" value="<?= $userRow['role'] === 'admin' ? 'user' : 'admin' ?>">
+                                                <button class="btn btn-outline-primary btn-sm" type="submit" <?= ((int)$userRow['id'] === (int)($_SESSION['user']['id'] ?? 0)) ? 'disabled' : '' ?>>
+                                                    <?= $userRow['role'] === 'admin' ? 'Zu User' : 'Zu Admin' ?>
+                                                </button>
+                                            </form>
+                                            <form method="post" class="d-inline">
+                                                <input type="hidden" name="action" value="reset_pw">
+                                                <input type="hidden" name="user_id" value="<?= (int)$userRow['id'] ?>">
+                                                <button class="btn btn-outline-warning btn-sm" type="submit">Reset PW</button>
+                                            </form>
+                                            <form method="post" class="d-inline" onsubmit="return confirm('Konto wirklich löschen?');">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="user_id" value="<?= (int)$userRow['id'] ?>">
+                                                <button class="btn btn-outline-danger btn-sm" type="submit" <?= ((int)$userRow['id'] === (int)($_SESSION['user']['id'] ?? 0)) ? 'disabled' : '' ?>>Delete</button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

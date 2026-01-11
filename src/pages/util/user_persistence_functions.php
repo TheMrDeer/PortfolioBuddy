@@ -62,4 +62,53 @@ function update_user_password(mysqli $db, int $userId, string $passwordHash): ar
     $stmt->close();
     return ['success' => true, 'error' => ''];
 }
+
+/**
+ * Update a user's role (admin|user).
+ */
+function update_user_role(mysqli $db, int $userId, string $role): array
+{
+    $role = strtolower($role);
+    if (!in_array($role, ['admin', 'user'], true)) {
+        return ['success' => false, 'error' => 'Invalid role.'];
+    }
+
+    $sql = "UPDATE users SET role = ? WHERE id = ?";
+    $stmt = $db->prepare($sql);
+    if (!$stmt) {
+        return ['success' => false, 'error' => 'DB error: ' . $db->error];
+    }
+
+    $stmt->bind_param("si", $role, $userId);
+    if (!$stmt->execute()) {
+        $error = $stmt->error ?: $db->error;
+        $stmt->close();
+        return ['success' => false, 'error' => 'DB error: ' . $error];
+    }
+
+    $stmt->close();
+    return ['success' => true, 'error' => ''];
+}
+
+/**
+ * Delete a user account (assets removed via FK cascade).
+ */
+function delete_user_account(mysqli $db, int $userId): array
+{
+    $sql = "DELETE FROM users WHERE id = ?";
+    $stmt = $db->prepare($sql);
+    if (!$stmt) {
+        return ['success' => false, 'error' => 'DB error: ' . $db->error];
+    }
+
+    $stmt->bind_param("i", $userId);
+    if (!$stmt->execute()) {
+        $error = $stmt->error ?: $db->error;
+        $stmt->close();
+        return ['success' => false, 'error' => 'DB error: ' . $error];
+    }
+
+    $stmt->close();
+    return ['success' => true, 'error' => ''];
+}
 ?>
