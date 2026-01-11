@@ -25,8 +25,6 @@ Die Verbindungseinstellungen befinden sich in der Datei `src/pages/includes/dbac
 * **Benutzer:** `portfoliobuddy_db`
 * **Passwort:** `KUybM[Ud/_HOLvHw`
 
-Stelle sicher, dass diese Daten mit deiner lokalen Datenbank übereinstimmen.
-
 ---
 
 ## 2. Datenbank Einrichtung
@@ -77,25 +75,6 @@ CREATE TABLE `assets` (
   CONSTRAINT `assets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
-## 3. Systemarchitektur
-
-Das System basiert auf einer relationalen Datenbank und PHP-Sessions.
-Authentifizierung & Sicherheit
-
-    Login: E-Mail und Passwort werden abgefragt. Das Passwort wird mittels password_verify() gegen den in der DB gespeicherten Hash geprüft.
-
-    Session: Nach erfolgreichem Login wird die user_id in $_SESSION['user'] gespeichert. Alle geschützten Seiten (dashboard.php, positions.php) prüfen zu Beginn, ob diese Session existiert.
-
-    SQL-Injection Schutz: Alle Datenbankabfragen nutzen Prepared Statements ($stmt->prepare(...) und $stmt->bind_param(...)), um Angriffe zu verhindern.
-
---Beziehungen (Relationen)
-
-    1:n Beziehung: Ein User kann viele Assets haben.
-
-    Foreign Key Constraint: Die Tabelle assets ist fest mit users verbunden.
-
-    On Delete Cascade: Wenn ein Benutzer aus der Tabelle users gelöscht wird, löscht die Datenbank automatisch alle seine Einträge in der Tabelle assets. Das verhindert Datenmüll ("verwaiste Einträge").
-
 ## 4. Ordnerstruktur & Uploads
 
 Dateien (wie Profilbilder oder Kaufbelege) werden nicht in der Datenbank gespeichert, sondern im Dateisystem, um die Performance zu schonen.
