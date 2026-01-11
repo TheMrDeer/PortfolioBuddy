@@ -33,6 +33,31 @@ $qty  = '';
 $price = '';
 $date = '';
 $isEditMode = false;
+$assetFiles = [];
+
+// --- FILE DOWNLOAD ---
+if (isset($_GET['action']) && $_GET['action'] === 'download_file' && isset($_GET['asset_id'], $_GET['file'])) {
+    $downloadAssetId = (int)$_GET['asset_id'];
+    $downloadFile = basename($_GET['file']);
+
+    if ($downloadAssetId > 0 && $downloadFile !== '' && user_owns_asset($db_obj, $userId, $downloadAssetId)) {
+        $filePath = asset_documents_dir($userId, $downloadAssetId) . '/' . $downloadFile;
+        if (is_file($filePath)) {
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($filePath) ?: 'application/octet-stream';
+            header('Content-Type: ' . $mimeType);
+            header('Content-Disposition: attachment; filename="' . $downloadFile . '"');
+            header('Content-Length: ' . filesize($filePath));
+            readfile($filePath);
+            exit;
+        }
+    }
+
+    $redirectId = $downloadAssetId > 0 ? $downloadAssetId : '';
+    $target = $redirectId !== '' ? "/positions.php?action=edit&id={$redirectId}&file_error=1" : "/positions.php?file_error=1";
+    header('Location: ' . $target);
+    exit;
+}
 
 // --- A. LÖSCHEN ---
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
@@ -48,8 +73,25 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $delStmt->close();
 }
 
-// --- B. SPEICHERN (INSERT/UPDATE) ---
-if ($isPost) {
+// --- B. DATEI LOESCHEN ---
+if ($isPost && isset($_POST['action']) && $_POST['action'] === 'delete_file') {
+    $deleteAssetId = (int)($_POST['asset_id'] ?? 0);
+    $deleteFile = basename($_POST['file_name'] ?? '');
+
+    if ($deleteAssetId > 0 && $deleteFile !== '' && user_owns_asset($db_obj, $userId, $deleteAssetId)) {
+        $filePath = asset_documents_dir($userId, $deleteAssetId) . '/' . $deleteFile;
+        if (is_file($filePath)) {
+            unlink($filePath);
+            header("Location: /positions.php?action=edit&id={$deleteAssetId}&file_deleted=1");
+            exit;
+        }
+        $errors[] = "Datei nicht gefunden.";
+    } else {
+        $errors[] = "Ungueltige Anfrage.";
+    }
+}
+// --- C. SPEICHERN (INSERT/UPDATE) ---
+elseif ($isPost) {
     $result = validate_asset_input($_POST, $_FILES);
     $currentAssetId = $_POST['asset_id'] ?? ''; 
 
@@ -148,6 +190,17 @@ elseif (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'
     $stmt->close();
 }
 
+if (isset($_GET['file_deleted']) && $successMessage === '') {
+    $successMessage = "Dokument geloescht.";
+}
+if (isset($_GET['file_error'])) {
+    $errors[] = "Datei nicht gefunden oder kein Zugriff.";
+}
+
+if ($isEditMode && !empty($currentAssetId)) {
+    $assetFiles = list_asset_documents($userId, (int)$currentAssetId);
+}
+
 // LISTE LADEN
 $myAssets = [];
 $listSql = "SELECT * FROM `assets` WHERE `user_id` = ? ORDER BY `purchase_date` DESC";
@@ -164,20 +217,50 @@ $db_obj->close();
 
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>My Positions — PortfolioBuddy</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-</head>
+<?php
+$pageTitle = 'My Positions - PortfolioBuddy';
+$includeBootstrapJs = true;
+include __DIR__ . '/includes/_head.php';
+?>
 <body>
 
 <?php include __DIR__ .'/includes/_navbar.php'; ?>
 
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
+    <div class="row justify-content-center g-4">
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="h5 mb-3">Dokumente</h2>
+
+                    <?php if ($isEditMode && !empty($currentAssetId)): ?>
+                        <?php if (!empty($assetFiles)): ?>
+                            <ul class="list-group">
+                                <?php foreach ($assetFiles as $doc): ?>
+                                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                                        <div class="text-truncate me-2"><?= htmlspecialchars($doc['name']) ?></div>
+                                        <div class="d-flex gap-2">
+                                            <a class="btn btn-sm btn-outline-primary" href="/positions.php?action=download_file&asset_id=<?= (int)$currentAssetId ?>&file=<?= urlencode($doc['name']) ?>">Download</a>
+                                            <form method="post" action="/positions.php" class="d-inline">
+                                                <input type="hidden" name="action" value="delete_file">
+                                                <input type="hidden" name="asset_id" value="<?= htmlspecialchars($currentAssetId) ?>">
+                                                <input type="hidden" name="file_name" value="<?= htmlspecialchars($doc['name']) ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Datei wirklich loeschen?');">Loeschen</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p class="text-muted mb-0">Keine Dokumente fuer dieses Asset.</p>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">Bearbeite ein Asset, um Dokumente zu sehen.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-7 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body p-4 p-md-5">
                     <h1 class="h3 mb-4"><?= $isEditMode ? 'Position bearbeiten' : 'Aktien verwalten' ?></h1>

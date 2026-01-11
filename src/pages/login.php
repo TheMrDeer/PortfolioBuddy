@@ -27,26 +27,24 @@ if ($isPost) {
             $result['success'] = false;
         } else {
             
-            // Eingaben vorbereiten
-            $emailRaw = $result['data']['email'];
+            
+            $emailRaw = get_field($result['data'],'email');
             $passwordInput = get_field($_POST, 'password');
 
-            // 2. SQL Statement: User suchen (PDF Folie 17)
-            // Wir holen id, name, passwort_hash und rolle
+            
             $sql = "SELECT id, fullname, email, password_hash, role FROM users WHERE email = ?";
             $stmt = $db_obj->prepare($sql);
 
-            // Parameter binden
+            
             $stmt->bind_param("s", $emailRaw);
             $stmt->execute();
 
-            // 3. Ergebnis an Variablen binden (PDF Folie 17)
-            // Die Reihenfolge muss exakt dem SELECT entsprechen!
+            
             $stmt->bind_result($uid, $uname, $uemail, $upassHash, $urole);
 
-            // 4. Daten abholen (PDF Folie 18)
+            
             if ($stmt->fetch()) {
-                // Benutzer gefunden - Jetzt Passwort prüfen (PDF Folie 20)
+               
                 if (password_verify($passwordInput, $upassHash)) {
                     // Login erfolgreich!
                     
@@ -73,7 +71,7 @@ if ($isPost) {
                 $result['errors'][] = "Ungültige E-Mail-Adresse oder Passwort.";
             }
 
-            // Aufräumen
+            
             $stmt->close();
             $db_obj->close();
         }
@@ -88,17 +86,10 @@ $errors = $result['errors'];
 
 <!doctype html>
 <html lang="en">
-<head>
- <!--Hier drinnen stehen META Tags, CSS, CDNS--> 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-        
-    <!-- Bootstrap CSS , da wir es ja verwenden müssen -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> 
-     
-  <title>Login— PortfolioBuddy</title>
-
-</head>
+<?php
+$pageTitle = 'Login?? PortfolioBuddy';
+include __DIR__ . '/includes/_head.php';
+?>
 
 <body class="min-vh-100 d-flex align-items-center">
   <div class="container">
@@ -110,11 +101,10 @@ $errors = $result['errors'];
         <!-- Show errors or success message conditionally based on form submission and validation result. -->
 
         <?php if ($isPost && !empty($errors)): ?>
-            <!-- Show validation feedback when the form was submitted; this keeps GETs clean and avoids confusing users. -->
+            
             <div class="alert alert-danger" role="alert">
               <ul class="mb-0 ps-3">
                 <?php
-                // Errors are expected to be a flat list; joining if an element is an array is defensive — prevents rendering raw arrays.
                 foreach ($errors as $err): ?>
                   <li><?= htmlspecialchars(is_array($err) ? implode(', ', $err) : $err, ENT_QUOTES, 'UTF-8') ?></li>
                 <?php endforeach; ?>
@@ -122,21 +112,17 @@ $errors = $result['errors'];
             </div>
         <?php endif; ?>
 
-        <!-- The login form itself. We prefill only the email field for UX; passwords are never prefilled for security reasons. -->
         <form method="post" action="">
            <div class="mb-3">
-            <!-- Require attribute helps client-side UX // but server-side validation is authoritative; keep both. -->
              <label for="email" class="form-label">E-Mail</label>
              <input type="email" class="form-control" id="email" name="email" value="<?= $prefillEmail ?>" required> 
            </div>
 
           <div class="mb-2">
-            <!-- We don't prefill passwords for security; keep the field blank on every render. -->
             <label for="password" class="form-label">Passwort</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required> 
           </div>
 
-            <!-- A POST submit keeps credentials out of the URL; button is placed after inputs for accessibility. -->
             <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
          </form>
 
