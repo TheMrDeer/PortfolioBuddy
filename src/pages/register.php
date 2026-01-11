@@ -196,25 +196,7 @@ include __DIR__ . '/includes/_head.php';
               Create account
             </button>
           </div>
-
-          <div>
-            <div class="d-flex align-items-center my-3">
-              <hr class="flex-grow-1">
-              <span class="px-2 text-muted text-uppercase">or</span>
-              <hr class="flex-grow-1">
-            </div>
-          </div>
-
-          <div class="d-grid gap-2">
-            <button type="button" class="btn btn-outline-secondary d-flex align-items-center justify-content-center">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-                alt="Google Logo"
-                style="width: 20px; height: 20px; margin-right: 8px"
-              />
-              Sign up with Google
-            </button>
-          </div>
+          
         </form>
 
         <p class="text-center text-secondary mt-3 mb-0">
