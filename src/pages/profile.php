@@ -26,7 +26,7 @@ if ($isPost) {
     if ($result['success']) {
         $db_obj = new mysqli($host, $user, $pass, $db);
         if ($db_obj->connect_error) {
-            $errors[] = "DB error: " . $db_obj->connect_error;
+            $errors[] = "DB-Fehler: " . $db_obj->connect_error;
         } else {
             $saveResult = update_user_profile(
                 $db_obj,
@@ -72,7 +72,7 @@ $errors = $result['errors'];
 <!doctype html>
 <html lang="en">
 <?php
-$pageTitle = 'My Profile - PortfolioBuddy';
+$pageTitle = 'Mein Profil - PortfolioBuddy';
 $includeBootstrapJs = true;
 include __DIR__ . '/includes/_head.php';
 ?>
@@ -85,10 +85,10 @@ include __DIR__ . '/includes/_head.php';
         <div class="col-12 col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body p-4 p-md-5">
-                    <h1 class="h3 mb-4">My Profile</h1>
+                    <h1 class="h3 mb-4">Mein Profil</h1>
 
                     <?php if (isset($_GET['success'])): ?>
-                        <div class="alert alert-success">Profile updated successfully!</div>
+                        <div class="alert alert-success">Profil erfolgreich aktualisiert!</div>
                     <?php endif; ?>
 
                     <?php if ($isPost && !empty($errors)): ?>
@@ -104,7 +104,7 @@ include __DIR__ . '/includes/_head.php';
                     <form method="post" enctype="multipart/form-data" action="/profile.php">
                         <!-- Full Name -->
                         <div class="mb-3">
-                            <label for="fullname" class="form-label">Full Name</label>
+                            <label for="fullname" class="form-label">Vollstaendiger Name</label>
                             <input
                                 id="fullname"
                                 name="fullname"
@@ -117,7 +117,7 @@ include __DIR__ . '/includes/_head.php';
 
                         <!-- Email -->
                         <div class="mb-3">
-                            <label for="email" class="form-label">E-mail</label>
+                            <label for="email" class="form-label">E-Mail</label>
                             <input
                                 id="email"
                                 name="email"
@@ -129,7 +129,7 @@ include __DIR__ . '/includes/_head.php';
                         </div>
                         
                         <div class="mb-3">
-                            <label for="profile_picture" class=form-label>Profile Picture</>
+                            <label for="profile_picture" class=form-label>Profilbild</>
                             <input
                                 id="profile_picture"
                                 name="profile_picture"
@@ -142,10 +142,10 @@ include __DIR__ . '/includes/_head.php';
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <?php if ($isEditMode): ?>
-                                <a href="/profile.php" class="btn btn-secondary">Cancel</a>
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="/profile.php" class="btn btn-secondary">Abbrechen</a>
+                                <button type="submit" class="btn btn-primary">Aenderungen speichern</button>
                             <?php else: ?>
-                                <a href="/profile.php?action=edit" class="btn btn-primary">Edit Profile</a>
+                                <a href="/profile.php?action=edit" class="btn btn-primary">Profil bearbeiten</a>
                             <?php endif; ?>
                         </div>
                     </form>

@@ -12,7 +12,7 @@ if (!isset($_SESSION['user'])) {
 $userRole = $_SESSION['user']['role'] ?? 'user';
 if ($userRole !== 'admin') {
     http_response_code(403);
-    echo 'Access denied.';
+    echo 'Zugriff verweigert.';
     exit;
 }
 
@@ -101,14 +101,14 @@ include __DIR__ . '/includes/_head.php';
         <div class="d-flex gap-2">
             <span class="badge text-bg-secondary">Gesamt: <?= $stats['total'] ?></span>
             <span class="badge text-bg-primary">Admins: <?= $stats['admins'] ?></span>
-            <span class="badge text-bg-success">Users: <?= $stats['users'] ?></span>
+            <span class="badge text-bg-success">Benutzer: <?= $stats['users'] ?></span>
         </div>
     </div>
 
     <?php foreach ($alerts as $alert): ?>
         <div class="alert alert-<?= htmlspecialchars($alert['type'], ENT_QUOTES, 'UTF-8') ?> alert-dismissible fade show" role="alert">
             <?= htmlspecialchars($alert['text'], ENT_QUOTES, 'UTF-8') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schliessen"></button>
         </div>
     <?php endforeach; ?>
 
@@ -141,7 +141,7 @@ include __DIR__ . '/includes/_head.php';
                                         <?php if ($userRow['role'] === 'admin'): ?>
                                             <span class="badge text-bg-primary">Admin</span>
                                         <?php else: ?>
-                                            <span class="badge text-bg-success">User</span>
+                                            <span class="badge text-bg-success">Benutzer</span>
                                         <?php endif; ?>
                                     </td>
                                     <td><?= htmlspecialchars(date('Y-m-d', strtotime($userRow['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
@@ -152,18 +152,18 @@ include __DIR__ . '/includes/_head.php';
                                                 <input type="hidden" name="user_id" value="<?= (int)$userRow['id'] ?>">
                                                 <input type="hidden" name="role" value="<?= $userRow['role'] === 'admin' ? 'user' : 'admin' ?>">
                                                 <button class="btn btn-outline-primary btn-sm" type="submit" <?= ((int)$userRow['id'] === (int)($_SESSION['user']['id'] ?? 0)) ? 'disabled' : '' ?>>
-                                                    <?= $userRow['role'] === 'admin' ? 'Zu User' : 'Zu Admin' ?>
+                                                    <?= $userRow['role'] === 'admin' ? 'Zu Benutzer' : 'Zu Admin' ?>
                                                 </button>
                                             </form>
                                             <form method="post" class="d-inline">
                                                 <input type="hidden" name="action" value="reset_pw">
                                                 <input type="hidden" name="user_id" value="<?= (int)$userRow['id'] ?>">
-                                                <button class="btn btn-outline-warning btn-sm" type="submit">Reset PW</button>
+                                                <button class="btn btn-outline-warning btn-sm" type="submit">PW zuruecksetzen</button>
                                             </form>
                                             <form method="post" class="d-inline" onsubmit="return confirm('Konto wirklich löschen?');">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="user_id" value="<?= (int)$userRow['id'] ?>">
-                                                <button class="btn btn-outline-danger btn-sm" type="submit" <?= ((int)$userRow['id'] === (int)($_SESSION['user']['id'] ?? 0)) ? 'disabled' : '' ?>>Delete</button>
+                                                <button class="btn btn-outline-danger btn-sm" type="submit" <?= ((int)$userRow['id'] === (int)($_SESSION['user']['id'] ?? 0)) ? 'disabled' : '' ?>>Loeschen</button>
                                             </form>
                                         </div>
                                     </td>

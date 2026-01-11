@@ -36,10 +36,10 @@ if ($files && count($files) > 0) {
         <div class="collapse navbar-collapse" id="dashNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'dashboard.php') ? 'active' : '' ?>" href="/dashboard.php">Overview</a>
+                    <a class="nav-link <?= ($currentPage === 'dashboard.php') ? 'active' : '' ?>" href="/dashboard.php">Uebersicht</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'positions.php') ? 'active' : '' ?>" href="/positions.php">Positions</a>
+                    <a class="nav-link <?= ($currentPage === 'positions.php') ? 'active' : '' ?>" href="/positions.php">Positionen</a>
                 </li>
                 <?php if (!empty($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
                 <li class="nav-item">
@@ -52,16 +52,16 @@ if ($files && count($files) > 0) {
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="<?= htmlspecialchars($avatarUrl, ENT_QUOTES, 'UTF-8') ?>"
-                            alt="Avatar"
+                            alt="Profilbild"
                             class="rounded-circle me-2"
                             width="28"
                             height="28">
                         <span><?= htmlspecialchars($_SESSION['user']['fullname'], ENT_QUOTES, 'UTF-8') ?></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-                        <li><a class="dropdown-item <?= ($currentPage === 'profile.php') ? 'active' : '' ?>" href="/profile.php">Profile</a></li>
+                        <li><a class="dropdown-item <?= ($currentPage === 'profile.php') ? 'active' : '' ?>" href="/profile.php">Profil</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout.php" >Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href="/logout.php" >Abmelden</a></li>
                     </ul>
                 </li>
             </ul>

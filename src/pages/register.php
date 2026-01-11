@@ -37,7 +37,7 @@ if ($isPostRequest) {
 
         // Verbindung prüfen
         if ($db_obj->connect_error) {
-            echo "Connection Error: " . $db_obj->connect_error;
+            echo "Verbindungsfehler: " . $db_obj->connect_error;
             exit();
         }
 
@@ -107,7 +107,7 @@ if ($isPostRequest) {
 <!doctype html>
 <html lang="en">
 <?php
-$pageTitle = 'Register - PortfolioBuddy';
+$pageTitle = 'Registrieren - PortfolioBuddy';
 include __DIR__ . '/includes/_head.php';
 ?>
 <body class="min-vh-100 d-flex align-items-center bg-light">
@@ -121,8 +121,8 @@ include __DIR__ . '/includes/_head.php';
           </svg>
         </div>
 
-        <h1 class="h4 text-center mb-2">Register for PortfolioBuddy</h1>
-        <p class="text-secondary text-center mb-4">Sign up and track your investing performance</p>
+        <h1 class="h4 text-center mb-2">Registrieren bei PortfolioBuddy</h1>
+        <p class="text-secondary text-center mb-4">Registriere dich und verfolge deine Anlageperformance</p>
         <?php if ($isPostRequest && !empty($errors)): ?>
           <div class="alert alert-danger" role="alert">
             <ul class="mb-0 ps-3">
@@ -145,12 +145,12 @@ include __DIR__ . '/includes/_head.php';
               required
               autocomplete="name"
               class="form-control"
-              placeholder="Jane Doe"
+              placeholder="Max Mustermann"
             />
           </div>
 
           <div class="mb-3">
-            <label for="email" class="form-label">E-mail</label>
+            <label for="email" class="form-label">E-Mail</label>
             <input
               id="email"
               name="email"
@@ -159,13 +159,13 @@ include __DIR__ . '/includes/_head.php';
               required
               autocomplete="email"
               class="form-control"
-              placeholder="example@com"
+              placeholder="beispiel@beispiel.de"
             />
           </div>
 
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <small class="form-text text-muted">must include at least one special character and one number.</small>
+            <label for="password" class="form-label">Passwort</label>
+            <small class="form-text text-muted">muss mindestens ein Sonderzeichen und eine Zahl enthalten.</small>
             <input
               id="password"
               name="password"
@@ -174,12 +174,12 @@ include __DIR__ . '/includes/_head.php';
               minlength="8"
               autocomplete="new-password"
               class="form-control"
-              placeholder="At least 8 characters"
+              placeholder="Mindestens 8 Zeichen"
             />
           </div>
 
           <div class="mb-3">
-            <label for="confirm" class="form-label">Confirm Password</label>
+            <label for="confirm" class="form-label">Passwort bestaetigen</label>
             <input
               id="confirm"
               name="passwordRepeat"
@@ -187,20 +187,20 @@ include __DIR__ . '/includes/_head.php';
               required
               autocomplete="new-password"
               class="form-control"
-              placeholder="Repeat your password"
+              placeholder="Passwort wiederholen"
             />
           </div>
 
           <div class="d-grid mt-4">
             <button class="btn btn-primary" id="submitBtn" type="submit">
-              Create account
+              Konto erstellen
             </button>
           </div>
           
         </form>
 
         <p class="text-center text-secondary mt-3 mb-0">
-          Already have an account? <a class="small-link" href="/login.php">Sign in</a>
+          Bereits ein Konto? <a class="small-link" href="/login.php">Anmelden</a>
         </p>
       </div>
     </div>

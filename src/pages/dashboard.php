@@ -54,8 +54,8 @@ include __DIR__ . '/includes/_head.php';
   <?php include __DIR__ .'/includes/_navbar.php'; ?>
 
   <div class="container py-5">
-    <h1>Welcome to your Dashboard, <?= htmlspecialchars($_SESSION['user']['fullname'], ENT_QUOTES, 'UTF-8') ?>!</h1>
-    <p class="lead">This is where you'll see an overview of your portfolio.</p>
+    <h1>Willkommen in deinem Dashboard, <?= htmlspecialchars($_SESSION['user']['fullname'], ENT_QUOTES, 'UTF-8') ?>!</h1>
+    <p class="lead">Hier siehst du eine Uebersicht deines Portfolios.</p>
     
     <div class="container pb-5">
         <div class="row justify-content-center">
@@ -133,7 +133,7 @@ const values = <?php echo json_encode($values)?>;
   const data = {
     labels: labels,
     datasets: [{
-      label: 'Portfolio Distribution (€)',
+      label: 'Portfolio-Verteilung (EUR)',
       data: values,
       backgroundColor: ['#ff6384','#36a2eb','#ffcd56','#4bc0c0','#9966ff','#ff9f40'],
     }]
