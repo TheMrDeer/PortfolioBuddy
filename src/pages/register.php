@@ -143,6 +143,10 @@ include __DIR__ . '/includes/_head.php';
                 </ul>
             </div>
         <?php endif; ?>
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 29e1252 (Fix form rendering issue by closing conditional statement in register.php)
 
   <form id="registerForm" action="/register.php" method="post">
   <!-- Full Name -->
